@@ -321,14 +321,14 @@ class Staff(models.Model):
     def __str__(self):
         return "username: %s Tipo de usuario: %s" % (self.username_staff, self.type_user)
 
-# Post
+# Postls
 class Post(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     author = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)
-    acquisition = models.OneToOneField(Acquisition, on_delete=models.CASCADE, related_name='PostAcquisition',blank=True,null=True)
-    rent = models.OneToOneField(Rent, on_delete=models.CASCADE, related_name='PostRent',blank=True,null=True)
+    acquisition = models.ForeignKey(Acquisition, on_delete=models.CASCADE, related_name='PostAcquisition',blank=True,null=True)
+    rent = models.ForeignKey(Rent, on_delete=models.CASCADE, related_name='PostRent',blank=True,null=True)
 
     def getDiference(self):
         now = datetime.now(timezone.utc)
