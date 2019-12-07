@@ -26,7 +26,7 @@ SECRET_KEY = 'ua8#z^xlf26l5$^geh-!%_h@&kqu&x95v#^468qlm@1+6+4jin'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['142.93.198.113', ]
+ALLOWED_HOSTS = ['167.71.151.228', ]
 
 
 # Application definition
@@ -76,7 +76,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'libraries': 
+            'libraries':
                 {'propiedades_tags':'propiedades2.template_tag.propiedades_tags'},
         },
     },
