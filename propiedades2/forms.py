@@ -454,8 +454,8 @@ class RentForm(ModelForm):
                 attrs={'class': 'form-control', 'placeholder': 'Ingrese nombre del arrendatario'}),
             'supplier_name': forms.TextInput(
                 attrs={'class': 'form-control', 'placeholder': 'Ingrese nombre del arrendador'}),
-            'start_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'end_date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
 
 class StaffForm(ModelForm):

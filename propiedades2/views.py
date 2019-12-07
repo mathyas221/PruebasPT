@@ -45,6 +45,58 @@ def randomString(stringLength=4):
 def index(request):
     data = {}
     data['staff'] = Staff.objects.get(username_staff = request.user)
+    #adquiridas
+    data['total_acquisition'] = Acquisition.objects.all()
+    data['acquisition_a'] = Acquisition.objects.filter(status=True)
+    # en el filtro: __lt => less than => menor que
+    #porcentaje menor a 25
+    percentage_25 = Acquisition.objects.filter(stats_acquisition__percentage__lt=25).count()
+    rent_percentage_25 = Rent.objects.filter(stats_rent__percentage__lt=25).count()
+    #porcentaje menor a 50
+    percentage_50 = Acquisition.objects.filter(stats_acquisition__percentage__lt=50).count()
+    rent_percentage_50 = Rent.objects.filter(stats_rent__percentage__lt=50).count()
+    #porcentaje menor a 75
+    percentage_75 = Acquisition.objects.filter(stats_acquisition__percentage__lt=75).count()
+    rent_percentage_75 = Rent.objects.filter(stats_rent__percentage__lt=75).count()
+    #porcentaje mayor a 75
+    # en el filtro: __gt => greather than => mayor que
+    percentage_100 = Acquisition.objects.filter(stats_acquisition__percentage__gt=75).count()
+    rent_percentage_100 = Rent.objects.filter(stats_rent__percentage__gt=75).count()
+    # total de procentajes acquisition + rent
+    por_50_ac = (percentage_50 - percentage_25)
+    por_50_rt = (rent_percentage_50 - rent_percentage_25)
+    por_75_ac = (percentage_75 - (percentage_50 + percentage_25))
+    por_75_rt = (rent_percentage_75 - (rent_percentage_50 + rent_percentage_25))
+
+    data['property_per_25'] = percentage_25 + rent_percentage_25
+
+    if por_50_ac < 0 and por_50_rt >= 0:
+        data['property_per_50'] = por_50_rt
+    if por_50_ac >= 0 and por_50_rt < 0:
+        data['property_per_50'] = por_50_ac
+    if por_50_ac >= 0 and por_50_rt >= 0:
+        data['property_per_50'] = por_50_ac + por_50_rt
+    if por_75_ac < 0 and por_75_rt >= 0:
+        data['property_per_75'] = por_75_rt
+    if por_75_ac >= 0 and por750_rt < 0:
+        data['property_per_75'] = por_75_ac
+    if por_75_ac >= 0 and por_75_rt >= 0:
+        data['property_per_75'] = por_75_ac + por_75_rt
+    data['property_per_100'] = percentage_100 + rent_percentage_100
+
+    print(data['property_per_25'])
+    print(data['property_per_50'])
+    print(data['property_per_75'])
+    print(data['property_per_100'])
+
+
+    data['acquisition_d'] = Acquisition.objects.filter(status=False)
+    #rentadas
+    data['total_rent'] = Rent.objects.all()
+    data['rent_a'] = Rent.objects.filter(status=True)
+    data['rent_d'] = Rent.objects.filter(status=False)
+    #totales
+    data['total'] = len(Acquisition.objects.all()) + len(Rent.objects.all())
     return render(request, 'index.html', data)
 
 
@@ -320,12 +372,11 @@ def Add_acquisition(request):
                         data['formSII'].save()
                         prop.SII = data['formSII']
                         prop.save()
-                        #valores[0] = total
-                        #valores[1] = complete
-                        valores = walk_object(prop.pk)
-                        prop.stats_acquisition = create_stats(valores[0], valores[1])
-                        prop.save()
                     return JsonResponse({})
+            prop = Acquisition.objects.get(pk=request.POST.get('id_propiedad'))
+            valores = walk_object(prop.pk)
+            prop.stats_acquisition = create_stats(valores[0], valores[1])
+            prop.save()
         else:
             data = {
                 'formLocation': LocationForm, 'formAcquisition': AcquisitionForm, 'formArquitecture': ArquitectureForm,
@@ -377,7 +428,7 @@ def Add_rent(request):
                                 total += 1
                             else:
                                 total += 1
-                        
+
                             #y es donde se modifica el stats correspondiente a la propiedad
                     rent.stats_rent = create_stats(total-1, contestado-1)
                     rent.save()
@@ -508,9 +559,11 @@ def Edit_acquisition(request, acq_id):
                         prop.arquitecture = data['formArquitecture']
                         prop.save()
                         valores = walk_object(acq_id)
-                        prop.stats_acquisition.total = valores[0]
-                        prop.stats_acquisition.complete = valores[1]
-                        prop.save()
+                        stats =Stats.objects.get(pk = propiedad.stats_acquisition.pk)
+                        stats.total = valores[0]
+                        stats.complete = valores[1]
+                        stats.percentage = (float(valores[1])/float(valores[0]))*100
+                        stats.save()
                     return JsonResponse({})
 
             elif request.POST.get('Internal') is not None:
@@ -541,9 +594,11 @@ def Edit_acquisition(request, acq_id):
                         prop.internal = data['formInternal']
                         prop.save()
                         valores = walk_object(acq_id)
-                        prop.stats_acquisition.total = valores[0]
-                        prop.stats_acquisition.complete = valores[1]
-                        prop.save()
+                        stats =Stats.objects.get(pk = propiedad.stats_acquisition.pk)
+                        stats.total = valores[0]
+                        stats.complete = valores[1]
+                        stats.percentage = (float(valores[1])/float(valores[0]))*100
+                        stats.save()
                         return JsonResponse({})
 
             elif request.POST.get('Notary') is not None:
@@ -590,9 +645,11 @@ def Edit_acquisition(request, acq_id):
                         prop.notary = data['formNotary']
                         prop.save()
                         valores = walk_object(acq_id)
-                        prop.stats_acquisition.total = valores[0]
-                        prop.stats_acquisition.complete = valores[1]
-                        prop.save()
+                        stats =Stats.objects.get(pk = propiedad.stats_acquisition.pk)
+                        stats.total = valores[0]
+                        stats.complete = valores[1]
+                        stats.percentage = (float(valores[1])/float(valores[0]))*100
+                        stats.save()
                     return JsonResponse({})
 
             elif request.POST.get('SII') is not None:
@@ -623,11 +680,13 @@ def Edit_acquisition(request, acq_id):
                         prop.SII = data['formSII']
                         prop.save()
                         valores = walk_object(acq_id)
-                        prop.stats_acquisition.total = valores[0]
-                        prop.stats_acquisition.complete = valores[1]
-                        prop.save()
+                        stats =Stats.objects.get(pk = propiedad.stats_acquisition.pk)
+                        stats.total = valores[0]
+                        stats.complete = valores[1]
+                        stats.percentage = (float(valores[1])/float(valores[0]))*100
+                        stats.save()
                     return JsonResponse({})
-                
+
             if request.POST.get("commentacq") == None:
                 pass
             else:
@@ -691,12 +750,11 @@ def Edit_acquisition(request, acq_id):
                 'formOther': docother, 'formNotary': notary, 'formWR': docwr,
                 'formDC': docdc,
                 'formPH': docph, 'formEs': doces, 'formSII': sii,
-                'formAc': docac, 'formDB': docdb, 'id': acq_id
+                'formAc': docac, 'formDB': docdb, 'id': acq_id,'staff': data['staff'],
             }
         return render(request, 'edit_acquisition.html', data)
     else:
         return HttpResponseRedirect(reverse('list_acquisition'))
-
 
 @login_required(login_url='login')
 def Edit_rent(request, rent_id):
@@ -742,6 +800,7 @@ def Edit_rent(request, rent_id):
                         stats = Stats.objects.get(pk = propiedad.stats_rent.pk)
                         stats.total = total-2
                         stats.complete = contestado-2
+                        stats.percentage = (float(contestado-2)/float(total-2))*100
                         stats.save()
                         x = Change_property.objects.create(id_property = rent_id, type = 'Rent', user = data['staff'], comment = request.POST.get("commentrent"))
                         x.save()
@@ -889,8 +948,9 @@ def search(request):
         selection = request.GET.get('selection')
         if selection == '1':
             query = request.GET.get('q')
-            object_list_acquisition = Acquisition.objects.filter(Q(property_use=query) | Q(name__contains=query)).order_by('id')
-            object_list_rent = Rent.objects.filter(Q(property_use=query) | Q(name__contains=query)).order_by('id')
+            print(query)
+            object_list_acquisition = Acquisition.objects.filter(Q(property_use__name=str(query)) | Q(name__contains=str(query)))
+            object_list_rent = Rent.objects.filter(Q(property_use__name=str(query)) | Q(name__contains=str(query)))
             paginator_acq = Paginator(object_list_acquisition, 50)
             paginator_rent = Paginator(object_list_rent, 50)
             page = request.GET.get('page')
@@ -906,8 +966,7 @@ def search(request):
             return render(request, template, data)
         elif selection == '2':
             query = request.GET.get('q')
-            object_list_acquisition = Acquisition.objects.filter(
-                Q(property_use=query) | Q(name__contains=query)).order_by('id')
+            object_list_acquisition = Acquisition.objects.filter(Q(property_use__name=str(query)) | Q(name__contains=str(query)))
             paginator_acq = Paginator(object_list_acquisition, 100)
             page = request.GET.get('page')
             try:
@@ -1420,7 +1479,7 @@ def add_post(request):
             create_notification(request.user, "PA", id, 'AC')
             data = {'result': True}
             return JsonResponse(data)
-        elif request.POST.get('prop') == 'rent' and request.POST.get('description') != '':
+        if request.POST.get('prop') == 'rent' and request.POST.get('description') != '':
             id = request.POST.get('prop_id')
             rent_post = Rent.objects.get(pk=id)
             n_post = Post.objects.create(
@@ -1481,7 +1540,7 @@ def add_comment(request):
                 post = post_id,
             )
             n_post.save()
-            create_notification(request.user, "RA", id, 'AC')
+            create_notification(request.user, "RA", post_id.acquisition.pk, 'AC')
             data = {'result': True}
             return JsonResponse(data)
         elif request.POST.get('prop') == 'rent':
@@ -1493,7 +1552,7 @@ def add_comment(request):
                 post = rent_post,
             )
             n_post.save()
-            create_notification(request.user, "RR", id, 'RT')
+            create_notification(request.user, "RR", rent_post.rent.pk, 'RT')
             data = {'result': True}
             return JsonResponse(data)
         else:
@@ -1622,395 +1681,397 @@ def generate_report_excel(request):
         if request.POST.get('filtro') != None:
             if request.POST.get('filtro') == 'comuna_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__commune=query)).order_by('id')
+                    Q(location__commune__contains=query)).order_by('id')
             if request.POST.get('filtro') == 'ciudad_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__city=query)).order_by('id')
+                    Q(location__city__contains=query)).order_by('id')
             if request.POST.get('filtro') == 'region_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__region__name=query)).order_by('id')
+                    Q(location__region__name__contains=query)).order_by('id')
+            if request.POST.get('filtro') == 'distrito_true':
+                object_list_acquisition = Acquisition.objects.filter(
+                    Q(location__region__name__contains=query)).order_by('id')
             if request.POST.get('filtro') == 'tipo_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(writing_data=query)).order_by('id')
+                    Q(writing_data__contains=query)).order_by('id')
             if request.POST.get('filtro') == 'uso_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(property_use__name=query)).order_by('id')
+                    Q(property_use__name__contains=query)).order_by('id')
+
+        if object_list_acquisition.exists():
+            response = HttpResponse(content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename=Reporte_propiedades.xlsx'
+            excel = Report()
+            time = str(timezone.now())
+            datetime = str(time)
+            excel.date = time
+            filename_excel = 'Reporte_propiedades' + datetime + '.xlsx'
+
+            # Hoja de trabajo
+            wb = Workbook()
+            ws = wb.active
+            ft = Font(bold=True)
+            bor = Border(left=Side(border_style='thin',color = 'FF000000'),
+                            right = Side(border_style='thin',color = 'FF000000'),
+                            top = Side(border_style='thin',color = 'FF000000'),
+                            bottom = Side(border_style='thin',color = 'FF000000'))
+            align = Alignment(wrap_text=True,vertical='center',horizontal='center')
+            ws['C2'] = 'Organización Adventista del Séptimo Día'
+            ws['C2'].font = ft
+            ws['C3'] = 'Reporte propiedades'
+            ws['C3'].font = ft
+            time = str(timezone.now())
+            ws['C4'] = str(time[:10])
+            ws.merge_cells('C2:F2')
+            ws.merge_cells('C3:F3')
+            img = Image('static/logoA.png')
+            img.width = 50
+            img.height = 50
+            ws.add_image(img,'B2')
+            my_style = NamedStyle(name='Encabezado_Tabla')
+            my_style.font = ft
+            my_style.border = bor
+            my_style.alignment = align
+            my_style.fill = PatternFill("solid", fgColor="DDDDDD")
+
+            my_style2 = NamedStyle(name='Contenido_Tabla')
+            my_style2.border = bor
+            my_style2.alignment = align
+
+            #cabeceras de la tabla
+            ws['B6'] = 'N°AASI'
+            ws['B6'].style = my_style
+
+            ws['C6'] = 'N°ROL'
+            ws['C6'].style = my_style
+
+            ws['D6'] = 'Uso'
+            ws['D6'].style = my_style
+
+            ws['E6'] = 'Nombre'
+            ws['E6'].style = my_style
+            ws.merge_cells('E6:G6')
+
+            ws['H6'] = 'Dirección'
+            ws['H6'].style = my_style
+            ws.merge_cells('H6:J6')
+
+            ws['K6'] = 'Nro.'
+            ws['K6'].style = my_style
+
+            ws['L6'] = 'Comuna'
+            ws['L6'].style = my_style
+            ws.merge_cells('L6:M6')
+
+            ws['N6'] = 'Ciudad'
+            ws['N6'].style = my_style
+
+            ws['O6'] = 'Región'
+            ws['O6'].style = my_style
+
+            ws['P6'] = 'Escritura'
+            ws['P6'].style = my_style
+
+            ws['Q6'] = 'Fecha inscripción'
+            ws['Q6'].style = my_style
+            ws.merge_cells('Q6:R6')
+
+            ws['S6'] = 'Vendedor'
+            ws['S6'].style = my_style
+            ws.merge_cells('S6:U6')
+
+            ws['V6'] = 'Comprador'
+            ws['V6'].style = my_style
+            ws.merge_cells('V6:X6')
+
+            ws['Y6'] = 'Notaría'
+            ws['Y6'].style = my_style
+            ws.merge_cells('Y6:AB6')
+
+            ws['AC6'] = 'Año Escritura'
+            ws['AC6'].style = my_style
+
+            ws['AD6'] = 'Título Anterior'
+            ws['AD6'].style = my_style
+
+            ws['AE6'] = 'Título Actual'
+            ws['AE6'].style = my_style
+
+            ws['AF6'] = 'Precio Venta'
+            ws['AF6'].style = my_style
+            ws.merge_cells('AF6:AG6')
+
+            ws['AH6'] = 'Valor Terreno'
+            ws['AH6'].style = my_style
+            ws.merge_cells('AH6:AI6')
+
+            ws['AJ6'] = 'Valor construcción'
+            ws['AJ6'].style = my_style
+            ws.merge_cells('AJ6:AK6')
+
+            ws['AL6'] = 'Nombre Propietario SII'
+            ws['AL6'].style = my_style
+            ws.merge_cells('AL6:AN6')
+
+            ws['AO6'] = 'Destino SII'
+            ws['AO6'].style = my_style
+            ws.merge_cells('AO6:AQ6')
+
+            ws['AR6'] = 'Deuda total'
+            ws['AR6'].style = my_style
+            ws.merge_cells('AR6:AS6')
+
+            ws['AT6'] = 'Avalúo fiscal'
+            ws['AT6'].style = my_style
+            ws.merge_cells('AT6:AV6')
+
+            ws['AW6'] = 'Exención contribuciones'
+            ws['AW6'].style = my_style
+            ws.merge_cells('AW6:AX6')
+
+            ws['AY6'] = 'Superficie Terreno'
+            ws['AY6'].style = my_style
+            ws.merge_cells('AY6:AZ6')
+
+            ws['BA6'] = 'MTS construidos PE-RF'
+            ws['BA6'].style = my_style
+            ws.merge_cells('BA6:BB6')
+
+            ws['BC6'] = 'MTS construidos existentes'
+            ws['BC6'].style = my_style
+            ws.merge_cells('BC6:BD6')
+
+            ws['BE6'] = 'Nro Recepción municipal'
+            ws['BE6'].style = my_style
+            ws.merge_cells('BE6:BF6')
+
+            ws['BG6'] = 'Nro permiso edificación'
+            ws['BG6'].style = my_style
+            ws.merge_cells('BG6:BH6')
+
+
+
+            #LLamar a objetos
+            ven = 'Sin registro'
+            adq = 'Sin registro'
+            nota = 'Sin registro'
+            wy = 'Sin registro'
+            pt = 'Sin registro'
+            ct = 'Sin registro'
+            sp = 'Sin registro'
+            vl = 'Sin registro'
+            vc = 'Sin registro'
+            des = 'Sin registro'
+            owner = 'Sin registro'
+            dest = 'Sin registro'
+            debt = 'Sin registro'
+            af = 'Sin registro'
+            ec = 'Sin registro'
+            st = 'Sin registro'
+            mc = 'Sin registro'
+            me = 'Sin registro'
+            rm = 'Sin registro'
+            pe = 'Sin registro'
+
+            cont = 7
+            for prop in object_list_acquisition:
+                #Recorrer objetos
+                calle = prop.location.street
+                if prop.location.plot != None and prop.location.lot_number != None:
+                    calle = str(calle) + ',' + str(prop.location.plot) + ' ' + str(prop.location.lot_number)
+
+                if prop.internal is not None:
+                    if prop.internal.supplier_name is not None:
+                        ven = prop.internal.supplier_name
+                    if prop.internal.acquiring_name is not None:
+                        adq = prop.internal.acquiring_name
+                    if prop.internal.value_land is not None:
+                        vl = prop.internal.value_land
+                    if prop.internal.value_construction is not None:
+                        vc = prop.internal.value_construction
+
+                if prop.notary is not None:
+                    if prop.notary.notary is not None:
+                        nota = prop.notary.notary
+                    if prop.notary.writing_year is not None:
+                        wy = prop.notary.writing_year
+                    if prop.notary.previous_title is not None:
+                        pt = prop.notary.previous_title
+                    if prop.notary.current_title is not None:
+                        ct = prop.notary.current_title
+                    if prop.notary.sale_price is not None:
+                        sp = prop.notary.sale_price
+
+                if prop.SII is not None:
+                    if prop.SII.destiny is not None:
+                        des = prop.SII.destiny
+                    if prop.SII.owner_name_SII is not None:
+                        owner = prop.SII.owner_name_SII
+                    if prop.SII.total_debt is not None:
+                        debt = prop.SII.total_debt
+                    if prop.SII.tax_appraisal is not None:
+                        af = prop.SII.tax_appraisal
+                    if prop.SII.ex_contributions is not None:
+                        ec = prop.SII.ex_contributions
+
+                if prop.arquitecture is not None:
+                    if prop.arquitecture.ground_surface is not None:
+                        st = prop.arquitecture.ground_surface
+                    if prop.arquitecture.square_m_build is not None:
+                        mc = prop.arquitecture.square_m_build
+                    if prop.arquitecture.e_construction_m is not None:
+                        me = prop.arquitecture.e_construction_m
+                    if prop.arquitecture.municipal_n is not None:
+                        rm = prop.arquitecture.municipal_n
+                    if prop.arquitecture.n_building_permit is not None:
+                        pe = prop.arquitecture.n_building_permit
+
+                #escribir la tabla, en matrices
+                ws.cell(row=cont, column=2).value = prop.number_AASI
+                ws.cell(row=cont, column=2).style = my_style2
+
+                ws.cell(row=cont, column=3).value = prop.role_number
+                ws.cell(row=cont, column=3).style = my_style2
+
+                ws.cell(row=cont,column=4).value = prop.property_use.acronym
+                ws.cell(row=cont, column=4).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=5, end_row=cont, end_column=7)
+                ws.cell(row=cont, column=5).value = prop.name
+                ws.cell(row=cont, column=5).style = my_style2
+                ws.cell(row=cont, column=6).style = my_style2
+                ws.cell(row=cont, column=7).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=8, end_row=cont, end_column=10)
+                ws.cell(row=cont, column=8).value = calle
+                ws.cell(row=cont, column=8).style = my_style2
+                ws.cell(row=cont, column=9).style = my_style2
+                ws.cell(row=cont, column=10).style = my_style2
+
+                ws.cell(row=cont, column=11).value = prop.location.number
+                ws.cell(row=cont, column=11).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=12, end_row=cont, end_column=13)
+                ws.cell(row=cont, column=12).value = prop.location.commune
+                ws.cell(row=cont, column=12).style = my_style2
+                ws.cell(row=cont, column=13).style = my_style2
+
+                ws.cell(row=cont, column=14).value = prop.location.city
+                ws.cell(row=cont, column=14).style = my_style2
+
+                ws.cell(row=cont, column=15).value = prop.location.region.acronym
+                ws.cell(row=cont, column=15).style = my_style2
+
+                ws.cell(row=cont, column=16).value = prop.writing_data
+                ws.cell(row=cont, column=16).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=17, end_row=cont, end_column=18)
+                ws.cell(row=cont, column=17).value = str(prop.acquisition_date)[:10]
+                ws.cell(row=cont, column=17).style = my_style2
+                ws.cell(row=cont, column=18).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=19, end_row=cont, end_column=21)
+                ws.cell(row=cont, column=19).value = ven
+                ws.cell(row=cont, column=19).style = my_style2
+                ws.cell(row=cont, column=20).style = my_style2
+                ws.cell(row=cont, column=21).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=22, end_row=cont, end_column=24)
+                ws.cell(row=cont, column=22).value = adq
+                ws.cell(row=cont, column=22).style = my_style2
+                ws.cell(row=cont, column=23).style = my_style2
+                ws.cell(row=cont, column=24).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=25, end_row=cont, end_column=28)
+                ws.cell(row=cont, column=25).value = nota
+                ws.cell(row=cont, column=25).style = my_style2
+                ws.cell(row=cont, column=26).style = my_style2
+                ws.cell(row=cont, column=27).style = my_style2
+                ws.cell(row=cont, column=28).style = my_style2
+
+                ws.cell(row=cont, column=29).value = wy
+                ws.cell(row=cont, column=29).style = my_style2
+
+                ws.cell(row=cont, column=30).value = pt
+                ws.cell(row=cont, column=30).style = my_style2
+
+                ws.cell(row=cont, column=31).value = ct
+                ws.cell(row=cont, column=31).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=32, end_row=cont, end_column=33)
+                ws.cell(row=cont, column=32).value = sp
+                ws.cell(row=cont, column=32).style = my_style2
+                ws.cell(row=cont, column=33).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=34, end_row=cont, end_column=35)
+                ws.cell(row=cont, column=34).value = vl
+                ws.cell(row=cont, column=34).style = my_style2
+                ws.cell(row=cont, column=35).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=36, end_row=cont, end_column=37)
+                ws.cell(row=cont, column=36).value = vc
+                ws.cell(row=cont, column=36).style = my_style2
+                ws.cell(row=cont, column=37).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=38, end_row=cont, end_column=40)
+                ws.cell(row=cont, column=38).value = owner
+                ws.cell(row=cont, column=38).style = my_style2
+                ws.cell(row=cont, column=39).style = my_style2
+                ws.cell(row=cont, column=40).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=41, end_row=cont, end_column=43)
+                ws.cell(row=cont, column=41).value = des
+                ws.cell(row=cont, column=41).style = my_style2
+                ws.cell(row=cont, column=42).style = my_style2
+                ws.cell(row=cont, column=43).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=44, end_row=cont, end_column=45)
+                ws.cell(row=cont, column=44).value = debt
+                ws.cell(row=cont, column=44).style = my_style2
+                ws.cell(row=cont, column=45).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=46, end_row=cont, end_column=48)
+                ws.cell(row=cont, column=46).value = af
+                ws.cell(row=cont, column=46).style = my_style2
+                ws.cell(row=cont, column=47).style = my_style2
+                ws.cell(row=cont, column=48).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=49, end_row=cont, end_column=50)
+                ws.cell(row=cont, column=49).value = ec
+                ws.cell(row=cont, column=49).style = my_style2
+                ws.cell(row=cont, column=50).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=51, end_row=cont, end_column=52)
+                ws.cell(row=cont, column=51).value = st
+                ws.cell(row=cont, column=51).style = my_style2
+                ws.cell(row=cont, column=52).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=53, end_row=cont, end_column=54)
+                ws.cell(row=cont, column=53).value = mc
+                ws.cell(row=cont, column=53).style = my_style2
+                ws.cell(row=cont, column=54).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=55, end_row=cont, end_column=56)
+                ws.cell(row=cont, column=55).value = me
+                ws.cell(row=cont, column=55).style = my_style2
+                ws.cell(row=cont, column=56).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=57, end_row=cont, end_column=58)
+                ws.cell(row=cont, column=57).value = rm
+                ws.cell(row=cont, column=57).style = my_style2
+                ws.cell(row=cont, column=58).style = my_style2
+
+                ws.merge_cells(start_row=cont, start_column=59, end_row=cont, end_column=60)
+                ws.cell(row=cont, column=59).value = pe
+                ws.cell(row=cont, column=59).style = my_style2
+                ws.cell(row=cont, column=60).style = my_style2
+
+                cont= cont+1
+
+            wb.save('media/Reportes/'+filename_excel)
+            return JsonResponse({'url': '/media/Reportes/'+filename_excel})
     else:
         return JsonResponse({'result': False})
-
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename=Reporte_propiedades.xlsx'
-    excel = Report()
-    time = str(timezone.now())
-    datetime = str(time)
-    excel.date = time
-    filename_excel = 'Reporte_propiedades' + datetime + '.xlsx'
-    
-    # Hoja de trabajo
-    wb = Workbook()
-    ws = wb.active
-    ft = Font(bold=True)
-    bor = Border(left=Side(border_style='thin',color = 'FF000000'),
-                    right = Side(border_style='thin',color = 'FF000000'),
-                    top = Side(border_style='thin',color = 'FF000000'),
-                    bottom = Side(border_style='thin',color = 'FF000000'))
-    align = Alignment(wrap_text=True,vertical='center',horizontal='center')
-    ws['C2'] = 'Organización Adventista del Séptimo Día'
-    ws['C2'].font = ft
-    ws['C3'] = 'Reporte propiedades'
-    ws['C3'].font = ft
-    time = str(timezone.now())
-    ws['C4'] = str(time[:10])
-    ws.merge_cells('C2:F2')
-    ws.merge_cells('C3:F3')
-    img = Image('static/logoA.png')
-    img.width = 50
-    img.height = 50
-    ws.add_image(img,'B2')
-    my_style = NamedStyle(name='Encabezado_Tabla')
-    my_style.font = ft
-    my_style.border = bor
-    my_style.alignment = align
-    my_style.fill = PatternFill("solid", fgColor="DDDDDD")
-
-    my_style2 = NamedStyle(name='Contenido_Tabla')
-    my_style2.border = bor
-    my_style2.alignment = align
-
-    #cabeceras de la tabla
-    ws['B6'] = 'N°AASI'
-    ws['B6'].style = my_style
-
-    ws['C6'] = 'N°ROL'
-    ws['C6'].style = my_style
-
-    ws['D6'] = 'Uso'
-    ws['D6'].style = my_style
-
-    ws['E6'] = 'Nombre'
-    ws['E6'].style = my_style
-    ws.merge_cells('E6:G6')
-
-    ws['H6'] = 'Dirección'
-    ws['H6'].style = my_style
-    ws.merge_cells('H6:J6')
-
-    ws['K6'] = 'Nro.'
-    ws['K6'].style = my_style
-
-    ws['L6'] = 'Comuna'
-    ws['L6'].style = my_style
-    ws.merge_cells('L6:M6')
-
-    ws['N6'] = 'Ciudad'
-    ws['N6'].style = my_style
-
-    ws['O6'] = 'Región'
-    ws['O6'].style = my_style
-
-    ws['P6'] = 'Escritura'
-    ws['P6'].style = my_style
-
-    ws['Q6'] = 'Fecha inscripción'
-    ws['Q6'].style = my_style
-    ws.merge_cells('Q6:R6')
-
-    ws['S6'] = 'Vendedor'
-    ws['S6'].style = my_style
-    ws.merge_cells('S6:U6')
-
-    ws['V6'] = 'Comprador'
-    ws['V6'].style = my_style
-    ws.merge_cells('V6:X6')
-
-    ws['Y6'] = 'Notaría'
-    ws['Y6'].style = my_style
-    ws.merge_cells('Y6:AB6')
-
-    ws['AC6'] = 'Año Escritura'
-    ws['AC6'].style = my_style
-
-    ws['AD6'] = 'Título Anterior'
-    ws['AD6'].style = my_style
-
-    ws['AE6'] = 'Título Actual'
-    ws['AE6'].style = my_style
-
-    ws['AF6'] = 'Precio Venta'
-    ws['AF6'].style = my_style
-    ws.merge_cells('AF6:AG6')
-
-    ws['AH6'] = 'Valor Terreno'
-    ws['AH6'].style = my_style
-    ws.merge_cells('AH6:AI6')
-
-    ws['AJ6'] = 'Valor construcción'
-    ws['AJ6'].style = my_style
-    ws.merge_cells('AJ6:AK6')
-
-    ws['AL6'] = 'Nombre Propietario SII'
-    ws['AL6'].style = my_style
-    ws.merge_cells('AL6:AN6')
-
-    ws['AO6'] = 'Destino SII'
-    ws['AO6'].style = my_style
-    ws.merge_cells('AO6:AQ6')
-
-    ws['AR6'] = 'Deuda total'
-    ws['AR6'].style = my_style
-    ws.merge_cells('AR6:AS6')
-
-    ws['AT6'] = 'Avalúo fiscal'
-    ws['AT6'].style = my_style
-    ws.merge_cells('AT6:AV6')
-
-    ws['AW6'] = 'Exención contribuciones'
-    ws['AW6'].style = my_style
-    ws.merge_cells('AW6:AX6')
-
-    ws['AY6'] = 'Superficie Terreno'
-    ws['AY6'].style = my_style
-    ws.merge_cells('AY6:AZ6')
-
-    ws['BA6'] = 'MTS construidos PE-RF'
-    ws['BA6'].style = my_style
-    ws.merge_cells('BA6:BB6')
-
-    ws['BC6'] = 'MTS construidos existentes'
-    ws['BC6'].style = my_style
-    ws.merge_cells('BC6:BD6')
-
-    ws['BE6'] = 'Nro Recepción municipal'
-    ws['BE6'].style = my_style
-    ws.merge_cells('BE6:BF6')
-
-    ws['BG6'] = 'Nro permiso edificación'
-    ws['BG6'].style = my_style
-    ws.merge_cells('BG6:BH6')
-
-
-
-    #LLamar a objetos
-    ven = 'Sin registro'
-    adq = 'Sin registro'
-    nota = 'Sin registro'
-    wy = 'Sin registro'
-    pt = 'Sin registro'
-    ct = 'Sin registro'
-    sp = 'Sin registro'
-    vl = 'Sin registro'
-    vc = 'Sin registro'
-    des = 'Sin registro'
-    owner = 'Sin registro'
-    dest = 'Sin registro'
-    debt = 'Sin registro'
-    af = 'Sin registro'
-    ec = 'Sin registro'
-    st = 'Sin registro'
-    mc = 'Sin registro'
-    me = 'Sin registro'
-    rm = 'Sin registro'
-    pe = 'Sin registro'
-    
-    for prop in object_list_acquisition:
-        #Recorrer objetos
-        cont = 7
-        calle = prop.location.street
-        if prop.location.plot != None and prop.location.lot_number != None:
-            calle = str(calle) + ',' + str(prop.location.plot) + ' ' + str(prop.location.lot_number)
-
-        if prop.internal is not None:
-            if prop.internal.supplier_name is not None:
-                ven = prop.internal.supplier_name
-            if prop.internal.acquiring_name is not None:
-                adq = prop.internal.acquiring_name
-            if prop.internal.value_land is not None:
-                vl = prop.internal.value_land
-            if prop.internal.value_construction is not None:
-                vc = prop.internal.value_construction
-
-        if prop.notary is not None:
-            if prop.notary.notary is not None:
-                nota = prop.notary.notary
-            if prop.notary.writing_year is not None:
-                wy = prop.notary.writing_year
-            if prop.notary.previous_title is not None:
-                pt = prop.notary.previous_title
-            if prop.notary.current_title is not None:
-                ct = prop.notary.current_title
-            if prop.notary.sale_price is not None:
-                sp = prop.notary.sale_price
-
-        if prop.SII is not None:
-            if prop.SII.destiny is not None:
-                des = prop.SII.destiny
-            if prop.SII.owner_name_SII is not None:
-                owner = prop.SII.owner_name_SII
-            if prop.SII.total_debt is not None:
-                debt = prop.SII.total_debt
-            if prop.SII.tax_appraisal is not None:
-                af = prop.SII.tax_appraisal
-            if prop.SII.ex_contributions is not None:
-                ec = prop.SII.ex_contributions
-
-        if prop.arquitecture is not None:
-            if prop.arquitecture.ground_surface is not None:
-                st = prop.arquitecture.ground_surface
-            if prop.arquitecture.square_m_build is not None:
-                mc = prop.arquitecture.square_m_build
-            if prop.arquitecture.e_construction_m is not None:
-                me = prop.arquitecture.e_construction_m
-            if prop.arquitecture.municipal_n is not None:
-                rm = prop.arquitecture.municipal_n
-            if prop.arquitecture.n_building_permit is not None:
-                pe = prop.arquitecture.n_building_permit
-
-        #escribir la tabla, en matrices
-        ws.cell(row=cont, column=2).value = prop.number_AASI
-        ws.cell(row=cont, column=2).style = my_style2
-
-        ws.cell(row=cont, column=3).value = prop.role_number
-        ws.cell(row=cont, column=3).style = my_style2
-
-        ws.cell(row=cont,column=4).value = prop.property_use.acronym
-        ws.cell(row=cont, column=4).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=5, end_row=cont, end_column=7)
-        ws.cell(row=cont, column=5).value = prop.name
-        ws.cell(row=cont, column=5).style = my_style2
-        ws.cell(row=cont, column=6).style = my_style2
-        ws.cell(row=cont, column=7).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=8, end_row=cont, end_column=10)
-        ws.cell(row=cont, column=8).value = calle
-        ws.cell(row=cont, column=8).style = my_style2
-        ws.cell(row=cont, column=9).style = my_style2
-        ws.cell(row=cont, column=10).style = my_style2
-
-        ws.cell(row=cont, column=11).value = prop.location.number
-        ws.cell(row=cont, column=11).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=12, end_row=cont, end_column=13)
-        ws.cell(row=cont, column=12).value = prop.location.commune
-        ws.cell(row=cont, column=12).style = my_style2
-        ws.cell(row=cont, column=13).style = my_style2
-
-        ws.cell(row=cont, column=14).value = prop.location.city
-        ws.cell(row=cont, column=14).style = my_style2
-
-        ws.cell(row=cont, column=15).value = prop.location.region.acronym
-        ws.cell(row=cont, column=15).style = my_style2
-
-        ws.cell(row=cont, column=16).value = prop.writing_data
-        ws.cell(row=cont, column=16).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=17, end_row=cont, end_column=18)
-        ws.cell(row=cont, column=17).value = str(prop.acquisition_date)[:10]
-        ws.cell(row=cont, column=17).style = my_style2
-        ws.cell(row=cont, column=18).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=19, end_row=cont, end_column=21)
-        ws.cell(row=cont, column=19).value = ven
-        ws.cell(row=cont, column=19).style = my_style2
-        ws.cell(row=cont, column=20).style = my_style2
-        ws.cell(row=cont, column=21).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=22, end_row=cont, end_column=24)
-        ws.cell(row=cont, column=22).value = adq
-        ws.cell(row=cont, column=22).style = my_style2
-        ws.cell(row=cont, column=23).style = my_style2
-        ws.cell(row=cont, column=24).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=25, end_row=cont, end_column=28)
-        ws.cell(row=cont, column=25).value = nota
-        ws.cell(row=cont, column=25).style = my_style2
-        ws.cell(row=cont, column=26).style = my_style2
-        ws.cell(row=cont, column=27).style = my_style2
-        ws.cell(row=cont, column=28).style = my_style2
-
-        ws.cell(row=cont, column=29).value = wy
-        ws.cell(row=cont, column=29).style = my_style2
-
-        ws.cell(row=cont, column=30).value = pt
-        ws.cell(row=cont, column=30).style = my_style2
-
-        ws.cell(row=cont, column=31).value = ct
-        ws.cell(row=cont, column=31).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=32, end_row=cont, end_column=33)
-        ws.cell(row=cont, column=32).value = sp
-        ws.cell(row=cont, column=32).style = my_style2
-        ws.cell(row=cont, column=33).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=34, end_row=cont, end_column=35)
-        ws.cell(row=cont, column=34).value = vl
-        ws.cell(row=cont, column=34).style = my_style2
-        ws.cell(row=cont, column=35).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=36, end_row=cont, end_column=37)
-        ws.cell(row=cont, column=36).value = vc
-        ws.cell(row=cont, column=36).style = my_style2
-        ws.cell(row=cont, column=37).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=38, end_row=cont, end_column=40)
-        ws.cell(row=cont, column=38).value = owner
-        ws.cell(row=cont, column=38).style = my_style2
-        ws.cell(row=cont, column=39).style = my_style2
-        ws.cell(row=cont, column=40).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=41, end_row=cont, end_column=43)
-        ws.cell(row=cont, column=41).value = des
-        ws.cell(row=cont, column=41).style = my_style2
-        ws.cell(row=cont, column=42).style = my_style2
-        ws.cell(row=cont, column=43).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=44, end_row=cont, end_column=45)
-        ws.cell(row=cont, column=44).value = debt
-        ws.cell(row=cont, column=44).style = my_style2
-        ws.cell(row=cont, column=45).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=46, end_row=cont, end_column=48)
-        ws.cell(row=cont, column=46).value = af
-        ws.cell(row=cont, column=46).style = my_style2
-        ws.cell(row=cont, column=47).style = my_style2
-        ws.cell(row=cont, column=48).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=49, end_row=cont, end_column=50)
-        ws.cell(row=cont, column=49).value = ec
-        ws.cell(row=cont, column=49).style = my_style2
-        ws.cell(row=cont, column=50).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=51, end_row=cont, end_column=52)
-        ws.cell(row=cont, column=51).value = st
-        ws.cell(row=cont, column=51).style = my_style2
-        ws.cell(row=cont, column=52).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=53, end_row=cont, end_column=54)
-        ws.cell(row=cont, column=53).value = mc
-        ws.cell(row=cont, column=53).style = my_style2
-        ws.cell(row=cont, column=54).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=55, end_row=cont, end_column=56)
-        ws.cell(row=cont, column=55).value = me
-        ws.cell(row=cont, column=55).style = my_style2
-        ws.cell(row=cont, column=56).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=57, end_row=cont, end_column=58)
-        ws.cell(row=cont, column=57).value = rm
-        ws.cell(row=cont, column=57).style = my_style2
-        ws.cell(row=cont, column=58).style = my_style2
-
-        ws.merge_cells(start_row=cont, start_column=59, end_row=cont, end_column=60)
-        ws.cell(row=cont, column=59).value = pe
-        ws.cell(row=cont, column=59).style = my_style2
-        ws.cell(row=cont, column=60).style = my_style2
-
-        cont= cont+1
-    
-    wb.save('media/Reportes/'+filename_excel)
-
-    print('se hace el excel')
-    return JsonResponse({'url': '/media/Reportes/'+filename_excel})
 
 
 def walk_object(id):
@@ -2036,7 +2097,7 @@ def walk_object(id):
         else:
             total += 1
             contestado += 1
-    if exp_num.archive != '':   
+    if exp_num.archive != '':
         total += 1
         contestado += 1
     else:

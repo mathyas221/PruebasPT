@@ -361,7 +361,7 @@ class Notification(models.Model):
     user_receiver = models.ForeignKey(Staff,on_delete=models.SET_NULL, null=True,related_name='Receptor')
     action = models.CharField(max_length=2, choices=ACTION_CHOICE)
     id_property = models.PositiveIntegerField(blank=True, null=True)
-    type_property = models.CharField(max_length=2, choices=ACTION_CHOICE)
+    type_property = models.CharField(max_length=2, choices=PROPERTY_CHOICE)
     time_str = models.CharField(max_length=100,default='0')
     time = models.DateTimeField(default=timezone.now)
     read_status = models.BooleanField(default=False)

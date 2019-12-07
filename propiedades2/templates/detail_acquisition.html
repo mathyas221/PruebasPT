@@ -206,7 +206,7 @@
                       <div class="card-body text-dark mb-auto">
                           <div class="row" style="margin-bottom: 14px">
                               <div class="col-md-2 col-lg-2">
-                                  <label class="col-form-label" style="color:#005a65;margin-left: 14px"><strong>{{request.user.first_name}}</strong></label>
+                                  <label class="col-form-label" style="color:#005a65;margin-left: 14px"><strong>{{ request.user }}</strong></label>
                               </div>
                               <div class="col-md-8 col-lg-8">
                                   <input type="text" class="form-control" id="Description_post" placeholder="Añade un comentario...">
@@ -223,7 +223,7 @@
                                                 <ul class= 'float-left' style="color:#005a65;margin-left: 14px;margin-top: 10px">
                                                     <strong>{{ cli.author.first_name }}</strong><spam style="color:grey; margin-left: 10px"> {{ cli.publish_date }}</spam>
                                                 </ul>
-                                                {% if cli.author.pk == request.user.pk %}
+                                                {% if cli.author.username_staff.pk == request.user.pk %}
                                                 <!-- Modal de delete post -->
                                                 <button type="button" class="btn btn-light float-right align-content-center" data-toggle="modal" data-target="#del_modal_{{ cli.pk }}" style="margin-top: 6px"><ion-icon name="close"></ion-icon></button>
                                                 <div class="modal fade" id="del_modal_{{ cli.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -252,7 +252,7 @@
                                                   <div class="modal-dialog" role="document">
                                                     <div class="modal-content">
                                                       <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">{{ cli.author.first_name }}</h5>
+                                                        <h5 class="modal-title" id="exampleModalLabel">{{ request.user }}</h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                           <span aria-hidden="true">&times;</span>
                                                         </button>
@@ -267,7 +267,7 @@
                                                     </div>
                                                   </div>
                                                 </div>
-                                                {% if cli.author.pk == request.user.pk %}
+                                                {% if cli.author.username_staff.pk == request.user.pk %}
                                                 <!-- Modal de editar post -->
                                                 <button type="button" class="btn btn-light float-right align-content-center" data-toggle="modal" data-target="#modal_{{ cli.pk }}" style="margin-top: 6px"><ion-icon name="create"></ion-icon></button>
                                                 <div class="modal fade" id="modal_{{ cli.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -304,7 +304,7 @@
                                                 <ul class= 'float-left' style="color:#005a65;margin-top: 10px">
                                                     <strong>{{ com.author.first_name }}</strong><spam style="color:grey; margin-left: 10px"> {{ com.publish_date }}</spam>
                                                 </ul>
-                                                {% if com.author.pk == request.user.pk %}
+                                                {% if com.author.username_staff.pk == request.user.pk %}
                                                 <!-- Modal eliminar comentario -->
                                                 <button type="button" class="btn btn-light float-right align-content-center" data-toggle="modal" data-target="#del_comment_{{ com.pk }}" style="margin-top: 6px"><ion-icon name="close"></ion-icon></button>
                                                 <div class="modal fade" id="del_comment_{{ com.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
