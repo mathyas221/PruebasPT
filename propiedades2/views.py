@@ -78,7 +78,7 @@ def index(request):
         data['property_per_50'] = por_50_ac + por_50_rt
     if por_75_ac < 0 and por_75_rt >= 0:
         data['property_per_75'] = por_75_rt
-    if por_75_ac >= 0 and por750_rt < 0:
+    if por_75_ac >= 0 and por_75_rt < 0:
         data['property_per_75'] = por_75_ac
     if por_75_ac >= 0 and por_75_rt >= 0:
         data['property_per_75'] = por_75_ac + por_75_rt
