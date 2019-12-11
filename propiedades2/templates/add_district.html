@@ -43,7 +43,6 @@
                 },
                 success: function (data) {
                     if (data.result == 'True'){
-                        alert('Paso')
                         window.location.href = "{% url 'list_district' %}"
                     }else if(data.result  == 'Max'){
                       swal({
@@ -54,7 +53,6 @@
                     }
                     else {
                         alert(data.result)
-                        alert('No paso')
                         swal({
                             title: 'Problemas',
                             text: 'El distrito ya existe',
