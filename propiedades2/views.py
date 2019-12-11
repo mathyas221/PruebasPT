@@ -88,7 +88,7 @@ def index(request):
     print(data['property_per_50'])
     print(data['property_per_75'])
     print(data['property_per_100'])
-
+    
 
     data['acquisition_d'] = Acquisition.objects.filter(status=False)
     #rentadas
@@ -428,7 +428,7 @@ def Add_rent(request):
                                 total += 1
                             else:
                                 total += 1
-
+                        
                             #y es donde se modifica el stats correspondiente a la propiedad
                     rent.stats_rent = create_stats(total-1, contestado-1)
                     rent.save()
@@ -686,7 +686,7 @@ def Edit_acquisition(request, acq_id):
                         stats.percentage = (float(valores[1])/float(valores[0]))*100
                         stats.save()
                     return JsonResponse({})
-
+            
             if request.POST.get("commentacq") == None:
                 pass
             else:
@@ -1252,6 +1252,7 @@ def add_region(request):
 def edit_region(request, region_id):
     data = {}
     template = 'edit_region.html'
+    data['staff'] = Staff.objects.get(username_staff = request.user)
     data['info'] = Region.objects.get(pk = region_id)
     if request.method == 'POST':
         nombre = request.POST.get('name')
@@ -1334,10 +1335,10 @@ def add_property(request):
 
 def edit_property(request, property_id):
     data = {}
+    data['staff'] = Staff.objects.get(username_staff = request.user)
     template = 'edit_property.html'
     data['info'] = Property.objects.get(pk = property_id)
     x = Property.objects.get(pk = property_id)
-    data['version_list'] = nn = Version.objects.get_for_object(x)
     if request.method == 'POST':
         nombre = request.POST.get('name')
         acronimo = request.POST.get('acronym')
@@ -1697,7 +1698,7 @@ def generate_report_excel(request):
             if request.POST.get('filtro') == 'uso_true':
                 object_list_acquisition = Acquisition.objects.filter(
                     Q(property_use__name__contains=query)).order_by('id')
-
+    
         if object_list_acquisition.exists():
             response = HttpResponse(content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=Reporte_propiedades.xlsx'
@@ -1706,7 +1707,7 @@ def generate_report_excel(request):
             datetime = str(time)
             excel.date = time
             filename_excel = 'Reporte_propiedades' + datetime + '.xlsx'
-
+            
             # Hoja de trabajo
             wb = Workbook()
             ws = wb.active
@@ -1872,7 +1873,7 @@ def generate_report_excel(request):
             me = 'Sin registro'
             rm = 'Sin registro'
             pe = 'Sin registro'
-
+            
             cont = 7
             for prop in object_list_acquisition:
                 #Recorrer objetos
@@ -2067,7 +2068,7 @@ def generate_report_excel(request):
                 ws.cell(row=cont, column=60).style = my_style2
 
                 cont= cont+1
-
+        
             wb.save('media/Reportes/'+filename_excel)
             return JsonResponse({'url': '/media/Reportes/'+filename_excel})
     else:
@@ -2097,7 +2098,7 @@ def walk_object(id):
         else:
             total += 1
             contestado += 1
-    if exp_num.archive != '':
+    if exp_num.archive != '':   
         total += 1
         contestado += 1
     else:
