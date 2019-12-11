@@ -1320,7 +1320,7 @@ def add_property(request):
     q = str(request.POST.get('acronym'))
     p = p.upper()
     q = q.upper()
-    if Region.objects.filter(name=p).exists() == False:
+    if Property.objects.filter(name=p).exists() == False:
         if len(q)<=5:
             if request.POST:
                 x = Property.objects.create(name=p, acronym=q)
