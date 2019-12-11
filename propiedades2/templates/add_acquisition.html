@@ -15,6 +15,23 @@
 </head>
 {% include "base.html" %}
 {% block content %}
+<style>
+    .popover {
+        background: #FFFD6F;
+    }
+
+    .popover-body {
+        background: #FFFD6F;
+    }
+
+    .popover-content {
+        background: #FFFD6F;
+    }
+
+    .popover-arrow-outer-color {
+        background: #FFFD6F;
+    }
+</style>
 
 <body>
     <div class="container">
@@ -25,7 +42,7 @@
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <h1>Agregar propiedad adquirida</h1>
-                            <br>
+                            
                             <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-12 col-sm-12 col-lg-6">
@@ -34,42 +51,42 @@
                                                 <h2>Datos de propiedad</h2>
                                             </div>
                                             <div class="card-body">
-                                                <label>Nombre propiedad: *</label>
+                                                <label><strong>Nombre propiedad: *</strong></label>
                                                 {{ formAcquisition.name }}
                                                 <p></p>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>Número de rol: *</label>
+                                                        <label><strong>Número de rol: *</strong></label>
                                                         {{ formAcquisition.role_number }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Uso de la propiedad: *</label>
+                                                        <label><strong>Uso de la propiedad: *</strong></label>
                                                         {{ formAcquisition.property_use }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Distrito: *</label>
+                                                        <label><strong>Distrito: *</strong></label>
                                                         {{ formAcquisition.district }}
                                                     </div>
                                                 </div>
                                                 <p></p>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>Imagen de la propiedad:</label>
+                                                        <label><strong>Imagen de la propiedad:</strong></label>
                                                         {{ formAcquisition.image }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Fecha de adquisición: *</label>
+                                                        <label><strong>Fecha de adquisición: *</strong></label>
                                                         {{ formAcquisition.acquisition_date }}
                                                     </div>
                                                 </div>
                                                 <p></p>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>Tipo de escritura: *</label>
+                                                        <label><strong>Tipo de escritura: *</strong></label>
                                                         {{ formAcquisition.writing_data }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Número AASI.net: *</label>
+                                                        <label><strong>Número AASI.net: *</strong></label>
                                                         {{ formAcquisition.number_AASI }}
                                                     </div>
                                                 </div>
@@ -77,56 +94,65 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12 col-sm-12 col-lg-6">
-                                        <div class="card border-dark">
+                                        <div class="card border-dark" id="localizacion">
                                             <div class="card-header">
                                                 <h2>Datos de dirección</h2>
                                             </div>
                                             <div class="card-body">
-                                                <label>Nombre de calle:*</label>
+                                                <label><strong>Nombre de calle:*</strong></label>
                                                 {{ formLocation.street }}
                                                 <p></p>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>Número propiedad:*</label>
+                                                        <label><strong>Número propiedad:*</strong></label>
                                                         {{ formLocation.number }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Comuna:*</label>
+                                                        <label><strong>Comuna:*</strong></label>
                                                         {{ formLocation.commune }}
                                                     </div>
                                                 </div>
                                                 <p></p>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>Ciudad:*</label>
+                                                        <label><strong>Ciudad:*</strong></label>
                                                         {{ formLocation.city }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Región:*</label>
+                                                        <label><strong>Región:*</strong></label>
                                                         {{ formLocation.region }}
                                                     </div>
                                                 </div>
                                                 <p></p>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <label>Parcela:</label>
+                                                        <label><strong>Parcela:</strong></label>
                                                         {{ formLocation.plot }}
                                                     </div>
                                                     <div class="col">
-                                                        <label>Número de parcela:</label>
+                                                        <label><strong>Número de parcela:</strong></label>
                                                         {{ formLocation.lot_number }}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <br>
                                     <div class='col-md-12' style="padding: 30px;">
                                         <button id="enviarPropiedad" type="button"
                                             class="btn btn-success btn-lg btn-block">Aceptar
                                         </button>
                                     </div>
                                 </div>
+
+                                <div id="alerta" class="alert alert-info alert-dismissible fade show" role="alert"
+                                    style='display: none;'>
+                                    <strong>Información importante!</strong> para continuar, has click en todos los
+                                    botones <strong>"Aceptar"</strong>, aunque no tengan información
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="card border-dark" id='Arquitecture' style="display: none">
@@ -270,7 +296,9 @@
                                                     </div>
                                                 </div>
                                                 <button id="enviarArquitecture" type="button"
-                                                    class="btn btn-success btn-lg btn-block" data-arq="no">Aceptar
+                                                    class="btn btn-success btn-lg btn-block" data-arq="no"
+                                                    data-toggle="tooltip" data-placement="top"
+                                                    title="Tooltip on top">Aceptar
                                                 </button>
                                             </div>
                                         </div>
@@ -583,40 +611,55 @@
 
         $("#enviarPropiedad").on("click", function () {
             var formulario = new FormData();
-            formulario.append('image', $('#image')[0].files[0]);
-            formulario.append('Tipo', "Propiedad");
-            formulario.append('name', $("#name").val());
-            formulario.append('role_number', $("#role_number").val());
-            formulario.append('property_use', $("#property_use").val());
-            formulario.append('district', $("#district").val());
-            formulario.append('number_AASI', $("#number_AASI").val());
-            formulario.append('acquisition_date', $("#acquisition_date").val());
-            formulario.append('writing_data', $("#writing_data").val());
-            // Location
-            formulario.append('street', $("#street").val());
-            formulario.append('number', $("#number").val());
-            formulario.append('commune', $("#commune").val());
-            formulario.append('city', $("#city").val());
-            formulario.append('region', $("#region").val());
-            formulario.append('lot_number', $("#lot_number").val());
-            formulario.append('plot', $("#plot").val());
-            formulario.append("csrfmiddlewaretoken", getCookie('csrftoken'));
-            $.ajax({
-                url: '{% url "add_acquisition" %}',
-                type: "POST",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: formulario,
-                success: function (id) {
-                    id_p = id['id'];
-                    $('#Arquitecture').show();
-                    $('#Notary').show();
-                    $('#Internos').show();
-                    $('#SII').show();
-                    $('#enviarPropiedad').hide();
-                }
-            });
+            if ($("#name").val() == '' || $("#role_number").val() == '' || $("#property_use").val() == ''
+                || $("#district").val() == '' || $("#acquisition_date").val() == '' || $("#number_AASI").val() == '' ||
+                $("#writing_data").val() == '' || $("#street").val() == '' || $("#number").val() == '' || $("#commune").val() == ''
+                || $("#city").val() == '' || $("#region").val() == '') {
+                swal({
+                    title: 'Problemas',
+                    text: 'Por favor llena los campos obligatorios: *',
+                    type: 'error'
+                });
+            }
+            else {
+                formulario.append('image', $('#image')[0].files[0]);
+                formulario.append('Tipo', "Propiedad");
+                formulario.append('name', $("#name").val());
+                formulario.append('role_number', $("#role_number").val());
+                formulario.append('property_use', $("#property_use").val());
+                formulario.append('district', $("#district").val());
+                formulario.append('number_AASI', $("#number_AASI").val());
+                formulario.append('acquisition_date', $("#acquisition_date").val());
+                formulario.append('writing_data', $("#writing_data").val());
+                // Location
+                formulario.append('street', $("#street").val());
+                formulario.append('number', $("#number").val());
+                formulario.append('commune', $("#commune").val());
+                formulario.append('city', $("#city").val());
+                formulario.append('region', $("#region").val());
+                formulario.append('lot_number', $("#lot_number").val());
+                formulario.append('plot', $("#plot").val());
+                formulario.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+                $.ajax({
+                    url: '{% url "add_acquisition" %}',
+                    type: "POST",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formulario,
+                    success: function (id) {
+                        id_p = id['id'];
+                        $('#Arquitecture').show();
+                        $('#Notary').show();
+                        $('#Internos').show();
+                        $('#SII').show();
+                        $('#enviarPropiedad').hide();
+                        $('#alerta').show()
+                        $('#adquisicion').hide()
+                        $('#localizacion').hide()
+                    }
+                });
+            }
         });
         $("#enviarArquitecture").on("click", function () {
             var formulario = new FormData();

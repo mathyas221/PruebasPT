@@ -29,7 +29,7 @@
                                     <button type="button" class="btn btn-warning">Cambiar Status</button>
                                 </a>
                             </h1>
-                            <br>
+                            
                             <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-12 col-sm-12 col-lg-6">
@@ -77,7 +77,7 @@
                                         </div>
                                     </div>
                                     <div class="col-md-12 col-sm-12 col-lg-6">
-                                        <div class="card border-dark">
+                                        <div class="card border-dark" id="localizacion">
                                             <div class="card-header">
                                                 <h2>Datos de dirección</h2>
                                             </div>
@@ -120,12 +120,20 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <br>
+                                    
                                     <div class='col-md-12' style="padding: 30px;">
                                         <button id="enviarPropiedad" type="button"
                                             class="btn btn-success btn-lg btn-block">Aceptar
                                         </button>
                                     </div>
+                                </div>
+                                <div id="alerta" class="alert alert-info alert-dismissible fade show" role="alert"
+                                    style='display: none;'>
+                                    <strong>Información importante!</strong> para continuar, has click en todos los
+                                    botones <strong>"Aceptar"</strong>, aunque no tengan información
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-6">
@@ -591,38 +599,54 @@
 
         $("#enviarPropiedad").on("click", function () {
             var formulario = new FormData();
-            formulario.append('image', $('#image')[0].files[0]);
-            formulario.append('Tipo', "Propiedad");
-            formulario.append('name', $("#name").val());
-            formulario.append('role_number', $("#role_number").val());
-            formulario.append('property_use', $("#property_use").val());
-            formulario.append('number_AASI', $("#number_AASI").val());
-            formulario.append('acquisition_date', $("#acquisition_date").val());
-            formulario.append('writing_data', $("#writing_data").val());
-            // Location
-            formulario.append('street', $("#street").val());
-            formulario.append('number', $("#number").val());
-            formulario.append('commune', $("#commune").val());
-            formulario.append('city', $("#city").val());
-            formulario.append('region', $("#region").val());
-            formulario.append('lot_number', $("#lot_number").val());
-            formulario.append('plot', $("#plot").val());
-            formulario.append("csrfmiddlewaretoken", getCookie('csrftoken'));
-            $.ajax({
-                url: '{% url "edit_acquisition" id  %}',
-                type: "POST",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: formulario,
-                success: function (id) {
-                    $('#Arquitecture').show();
-                    $('#Notary').show();
-                    $('#Internos').show();
-                    $('#SII').show();
-                    $('#enviarPropiedad').hide();
-                }
-            });
+            if ($("#name").val() == '' || $("#role_number").val() == '' || $("#property_use").val() == ''
+                || $("#district").val() == '' || $("#acquisition_date").val() == '' || $("#number_AASI").val() == '' ||
+                $("#writing_data").val() == '' || $("#street").val() == '' || $("#number").val() == '' || $("#commune").val() == ''
+                || $("#city").val() == '' || $("#region").val() == '') {
+                swal({
+                    title: 'Problemas',
+                    text: 'Por favor llena los campos obligatorios: *',
+                    type: 'error'
+                });
+            }
+            else {
+                formulario.append('image', $('#image')[0].files[0]);
+                formulario.append('Tipo', "Propiedad");
+                formulario.append('name', $("#name").val());
+                formulario.append('role_number', $("#role_number").val());
+                formulario.append('property_use', $("#property_use").val());
+                formulario.append('district', $("#district").val());
+                formulario.append('number_AASI', $("#number_AASI").val());
+                formulario.append('acquisition_date', $("#acquisition_date").val());
+                formulario.append('writing_data', $("#writing_data").val());
+                // Location
+                formulario.append('street', $("#street").val());
+                formulario.append('number', $("#number").val());
+                formulario.append('commune', $("#commune").val());
+                formulario.append('city', $("#city").val());
+                formulario.append('region', $("#region").val());
+                formulario.append('lot_number', $("#lot_number").val());
+                formulario.append('plot', $("#plot").val());
+                formulario.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+                $.ajax({
+                    url: '{% url "edit_acquisition" id %}',
+                    type: "POST",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formulario,
+                    success: function (id) {
+                        $('#Arquitecture').show();
+                        $('#Notary').show();
+                        $('#Internos').show();
+                        $('#SII').show();
+                        $('#enviarPropiedad').hide();
+                        $('#alerta').show()
+                        $('#adquisicion').hide()
+                        $('#localizacion').hide()
+                    }
+                });
+            }
         });
         $("#enviarArquitecture").on("click", function () {
             var formulario = new FormData();
