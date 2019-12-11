@@ -39,11 +39,9 @@
                 },
                 success: function (data) {
                     if (data.result){
-                        alert('Paso')
                         window.location.href = "{% url 'list_property' %}"
                     }
                     else {
-                        alert('No paso')
                         swal({
                             type: 'error',
                             text: 'La Región no se eliminó',

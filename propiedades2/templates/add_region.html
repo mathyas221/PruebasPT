@@ -43,7 +43,6 @@
                 },
                 success: function (data) {
                     if (data.result){
-                        alert('Paso')
                         window.location.href = "{% url 'list_region' %}"
                     }else if(data.result  == 'Max'){
                       swal({
@@ -53,7 +52,6 @@
                       })
                     }
                     else {
-                        alert('No paso')
                         swal({
                             title: 'Problemas',
                             text: 'La región ya existe',

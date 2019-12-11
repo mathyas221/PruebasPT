@@ -47,7 +47,6 @@
                 },
                 success: function (data) {
                     if (data.result) {
-                        
                         window.location.href = "{% url 'list_property' %}"
                     }
                     else {
@@ -60,7 +59,6 @@
                     }
                 },
                 error: function () {
-                    alert(acronimo.value)
                     alert('error')
                 }
             });
