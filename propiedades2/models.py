@@ -311,7 +311,7 @@ class Rent(models.Model):
         return "Nombre: %s" % (self.name)
 
 class Staff(models.Model):
-    username_staff = models.OneToOneField(User, on_delete=models.PROTECT)
+    username_staff = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=50)
     type_user = models.CharField(max_length=3, choices=POSITION_CHOICE)

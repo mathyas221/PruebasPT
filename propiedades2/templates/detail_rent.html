@@ -533,12 +533,9 @@
         var token = 'access_token=pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGd6OTVoZjA2amkzY3A4OGk5aXU2eXcifQ.W8sXY3UnNP91jzTzW1W2rw';
         var consulta = url.concat(calle);
         var consulta_final = consulta.concat(token);
-        alert(consulta_final)
         fetch(consulta_final)
             .then(res => res.json())
             .then(data => {
-                console.log(data.features[0].center[1], data.features[0].center[0])
-                console.log(data.features[0])
                 var longitud = data.features[0].center[0]
                 var latitud = data.features[0].center[1]
                 let MyMap = new mapboxgl.Map({

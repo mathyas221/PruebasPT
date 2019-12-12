@@ -41,7 +41,7 @@ def randomString(stringLength=4):
     letters = string.ascii_lowercase
     global CODE
     CODE = ''.join(random.choice(letters) for i in range(stringLength))
-
+@login_required(login_url='LOGIN')
 def index(request):
     data = {}
     data['staff'] = Staff.objects.get(username_staff = request.user)
@@ -100,7 +100,7 @@ def index(request):
     return render(request, 'index.html', data)
 
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def list_acquisition(request):
     data = {}
     object_list = Acquisition.objects.all().order_by('-id')
@@ -117,7 +117,7 @@ def list_acquisition(request):
     template_name = 'list_acquisition.html'
     return render (request, template_name, data)
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def view_acquisition(request, cli_id):
     data = {}
     data['staff'] = Staff.objects.get(username_staff=request.user)
@@ -133,7 +133,7 @@ def view_acquisition(request, cli_id):
         return render(request, template_name, data)
 
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def view_rent(request, rent_id):
     data = {}
     data['staff'] = Staff.objects.get(username_staff=request.user)
@@ -148,7 +148,7 @@ def view_rent(request, rent_id):
         return render(request, template_name, data)
 
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def list_rent(request):
     data = {}
     object_list = Rent.objects.all().order_by('-id')
@@ -168,7 +168,7 @@ def list_rent(request):
     return render(request, template_name, data)
 
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def Add_acquisition(request):
     data = {}
     staff = Staff.objects.get(username_staff=request.user)
@@ -397,7 +397,7 @@ def Add_acquisition(request):
         print(a)
         return HttpResponseRedirect(reverse('list_acquisition'))
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def Add_rent(request):
     data = {}
     data['staff'] = Staff.objects.get(username_staff=request.user)
@@ -445,7 +445,7 @@ def Add_rent(request):
 
     return render(request, 'add_rent.html', data)
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def Edit_acquisition(request, acq_id):
     data = {}
     propiedad = get_object_or_404(Acquisition, pk=acq_id)
@@ -756,7 +756,7 @@ def Edit_acquisition(request, acq_id):
     else:
         return HttpResponseRedirect(reverse('list_acquisition'))
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def Edit_rent(request, rent_id):
     data = {}
     print(rent_id)
@@ -816,7 +816,7 @@ def Edit_rent(request, rent_id):
     else:
         return HttpResponseRedirect(reverse('list_acquisition'))
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def Delete_rent(request,id):
     data = {}
     data['rent'] = Rent.objects.all()
@@ -824,7 +824,7 @@ def Delete_rent(request,id):
     return HttpResponseRedirect(reverse('list_rent'))
 
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def view_archive(request, document_type, document_id):
     data = {}
     data['request'] = request
@@ -917,7 +917,7 @@ def view_archive(request, document_type, document_id):
         return render(request, template_name)
 
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def list_total(request):
     data = {}
     object_list_acquisition = Acquisition.objects.all().order_by('id')
@@ -939,7 +939,7 @@ def list_total(request):
     template_name = 'list_total.html'
     return render(request, template_name, data)
 
-@login_required(login_url='login')
+@login_required(login_url='LOGIN')
 def search(request):
     template = 'search.html'
     data = {}
@@ -993,7 +993,7 @@ def search(request):
     else:
         return render(request, 'list_total.html')
 
-
+@login_required(login_url='LOGIN')
 def createstaff(request):
     data = {}
     data['title'] = 'Agregar Personal'
@@ -1047,7 +1047,7 @@ def createstaff(request):
         template = 'createstaff.html'
 
         return render(request, template, data)
-
+@login_required(login_url='LOGIN')
 def list_staff(request):
     data = {}
     staff = Staff.objects.get(username_staff = request.user)
@@ -1069,6 +1069,7 @@ def list_staff(request):
     else:
         return render(request, 'index.html', data)
 
+@login_required(login_url='LOGIN')
 def edit_staff(request,staff_id):
     data = {}
     staff = Staff.objects.get(username_staff = request.user)
@@ -1079,12 +1080,14 @@ def edit_staff(request,staff_id):
         form = EditStaffForm(request.POST, instance=Staff.objects.get(pk=staff_id))
         if form.is_valid():
             print('isvalid')
-            if request.POST['status'] == 'True':
+            if request.POST.get('status') == 'True':
                 print('True')
                 staff.status = True
-            elif request.POST['status'] == 'False':
+            elif request.POST.get('status') == 'False':
                 print('False')
                 staff.status = False
+            else:
+                pass
             user = User.objects.get(pk = request.POST['pk'])
             user.first_name = request.POST['first_name']
             user.last_name = request.POST['last_name']
@@ -1106,34 +1109,11 @@ def edit_staff(request,staff_id):
         data['user'] = user.pk
         return render(request, 'edit_staff.html', data)
 
+@login_required(login_url='LOGIN')
 def edit_password(request, staff_id):
     data = {}
     staff = get_object_or_404(Staff, pk=staff_id)
-    if request.method == 'POST':
-        print(request.POST['status'])
-        user = User.objects.get(pk=request.POST['pk'])
-        old_password = request.POST.get('old_password')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        if user.check_password(old_password) == True:
-            if password1 == password2:
-                user.set_password(password1)
-                user.save()
-                return JsonResponse({'result':True})
-            else:
-                return JsonResponse({'result': 'difpass'})
-        else:
-            return JsonResponse({'result': 'incpass'})
-    else:
-        data['data'] = PasswordChangeForm(instance=User.objects.get(username = staff.username_staff))
-        user = User.objects.get(username=staff.username_staff)
-        data['user'] = user.pk
-        return render(request, 'edit_password.html', data)
-
-def edit_password(request, staff_id):
-    data = {}
-    staff = get_object_or_404(Staff, pk=staff_id)
-    log = Staff.objects.get(pk=request.user.pk)
+    log = Staff.objects.get(pk=staff_id)
     logu = User.objects.get(pk=request.user.pk)
     if request.method == 'POST':
         user = User.objects.get(pk=request.POST.get('pk'))
@@ -1167,6 +1147,7 @@ def edit_password(request, staff_id):
         data['user'] = user.pk
         data['staff'] = log
         return render(request, 'edit_password.html', data)
+
 def Email_password(request):
     template = 'email_password.html'
     data = {}
@@ -1228,6 +1209,7 @@ def Validate_password(request):
         return JsonResponse({'result':False})
     return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def add_region(request):
     template = 'add_region.html'
     data = {}
@@ -1250,6 +1232,7 @@ def add_region(request):
 
     return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def edit_region(request, region_id):
     data = {}
     template = 'edit_region.html'
@@ -1264,6 +1247,7 @@ def edit_region(request, region_id):
     else:
         return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def delete_region(request):
     template = 'list_region.html'
     data = {}
@@ -1279,6 +1263,7 @@ def delete_region(request):
     else:
         return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def list_region(request):
     template = 'list_region.html'
     data = {}
@@ -1295,6 +1280,7 @@ def list_region(request):
         data['object_list'] = paginator.page(paginator.num_pages)
     return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def change_status_acquisition(request, id):
     aux = Acquisition.objects.get(pk = id)
     if aux.status == True:
@@ -1305,6 +1291,7 @@ def change_status_acquisition(request, id):
         create_notification(request.user, "SA", id, 'AC')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@login_required(login_url='LOGIN')
 def change_status_rent(request, id):
     aux = Rent.objects.get(pk = id)
     if aux.status == True:
@@ -1315,6 +1302,7 @@ def change_status_rent(request, id):
         create_notification(request.user, "SA", id, 'RT')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@login_required(login_url='LOGIN')
 def add_property(request):
     template = 'add_property.html'
     data = {}
@@ -1336,6 +1324,7 @@ def add_property(request):
 
     return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def edit_property(request, property_id):
     data = {}
     data['staff'] = Staff.objects.get(username_staff = request.user)
@@ -1363,6 +1352,7 @@ def edit_property(request, property_id):
     else:
         return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def delete_property(request):
     template = 'delete_property.html'
     data = {}
@@ -1375,6 +1365,7 @@ def delete_property(request):
     else:
         return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def list_property(request):
     template = 'list_property.html'
     data = {}
@@ -1391,6 +1382,7 @@ def list_property(request):
         data['object_list'] = paginator.page(paginator.num_pages)
     return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def create_staff(request):
     data = {}
     data['title'] = 'Agregar Personal'
@@ -1464,7 +1456,7 @@ def password_valid(password):
         return False
 
 # Post de usuarios
-
+@login_required(login_url='LOGIN')
 def add_post(request):
     data = {}
     if request.method == "POST" and request.POST.get('description') != '':
@@ -1502,6 +1494,7 @@ def add_post(request):
         data = {'result': False}
         return JsonResponse(data)
 
+@login_required(login_url='LOGIN')
 def edit_post(request):
     data = {}
     post_id = request.POST.get('id')
@@ -1516,6 +1509,7 @@ def edit_post(request):
         data = {'result': False}
         return JsonResponse(data)
 
+@login_required(login_url='LOGIN')
 def delete_post(request):
     data = {}
     if request.POST.get('id') is not None:
@@ -1528,6 +1522,7 @@ def delete_post(request):
     else:
         JsonResponse({'result': False})
 
+@login_required(login_url='LOGIN')
 def add_comment(request):
     data = {}
     print(request.POST)
@@ -1566,6 +1561,7 @@ def add_comment(request):
         data = {'result': False}
         return JsonResponse(data)
 
+@login_required(login_url='LOGIN')
 def edit_comment(request):
     data = {}
     comment_id = request.POST.get('id')
@@ -1579,6 +1575,7 @@ def edit_comment(request):
         data = {'result': False}
         return JsonResponse(data)
 
+@login_required(login_url='LOGIN')
 def delete_comment(request):
     data = {}
     if request.POST.get('id') is not None:
@@ -1590,6 +1587,7 @@ def delete_comment(request):
             JsonResponse({'result': False})
     else:
         JsonResponse({'result': False})
+
 
 def create_stats(total, complete):
     complete = complete
@@ -1610,6 +1608,7 @@ def contador(x):
             total += 1
     return (total, nocontestado)
 
+@login_required(login_url='LOGIN')
 def add_district(request):
     template = 'add_district.html'
     data = {}
@@ -1634,6 +1633,7 @@ def add_district(request):
 
     return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def edit_district(request, district_id):
     data = {}
     data['staff'] = Staff.objects.get(username_staff = request.user)
@@ -1649,6 +1649,7 @@ def edit_district(request, district_id):
     else:
         return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def delete_district(request,):
     template = 'delete_district.html'
     data = {}
@@ -1661,6 +1662,7 @@ def delete_district(request,):
     else:
         return render(request, template, data)
 
+@login_required(login_url='LOGIN')
 def list_district(request):
     template = 'list_district.html'
     data = {}
@@ -2213,6 +2215,8 @@ def walk_object(id):
     valores.append(total)
     valores.append(contestado)
     return valores
+
+@login_required(login_url='LOGIN')
 def delete_notification(request):
     pk_noti = request.POST.get('id_notification')
     print(pk_noti)
@@ -2222,7 +2226,7 @@ def delete_notification(request):
     else:
         return JsonResponse({'result':False})
 
-
+@login_required(login_url='LOGIN')
 def view_notificaction(request):
     data = {}
     data['Notifications'] = Notification.objects.filter(user_receiver__username_staff = request.user).order_by('-time')
@@ -2240,6 +2244,7 @@ def view_notificaction(request):
                 else:
                     Notification.objects.filter(pk = noti.pk).update(time_str=(aux[1][1]+' m'))
     return render(request, 'notifications.html', data)
+
 
 def create_notification(user, action, id_property, type_p):
     users = Staff.objects.all()
