@@ -1147,7 +1147,7 @@ def edit_password(request, staff_id):
     else:
         data['data'] = PasswordChangeForm(instance=User.objects.get(username = staff.username_staff))
         user = User.objects.get(username=staff.username_staff)
-        data['user'] = user.pk
+        data['user'] = staff_id
         data['staff'] = log
         return render(request, 'edit_password.html', data)
 
