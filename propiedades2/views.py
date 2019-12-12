@@ -1092,6 +1092,9 @@ def edit_staff(request,staff_id):
             user.first_name = request.POST['first_name']
             user.last_name = request.POST['last_name']
             user.email = request.POST['email']
+            staff.first_name = request.POST['first_name']
+            staff.last_name = request.POST['last_name']
+            staff.email = request.POST['email']
             staff.save()
             user.save()
             form.save()
