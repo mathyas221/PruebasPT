@@ -327,7 +327,7 @@ class Post(models.Model):
     description = models.CharField(max_length=500)
     author = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)
-    acquisition = models.ForeignKey(Acquisition, on_delete=models.PROTECT, related_name='PostAcquisition',blank=True,null=True)
+    acquisition = models.ForeignKey(Acquisition, on_delete=models.CASCADE, related_name='PostAcquisition',blank=True,null=True)
     rent = models.ForeignKey(Rent, on_delete=models.PROTECT, related_name='PostRent',blank=True,null=True)
 
     def getDiference(self):
@@ -346,7 +346,7 @@ class Change_property(models.Model):
         return "Username: %s, Fecha de Cambio: %s" % (self.user, self.publish_date)
 
 class Comment(models.Model):
-    post = models.ForeignKey('Post', on_delete=models.PROTECT, null=True)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)
     description = models.CharField(max_length=500)
     author = models.ForeignKey(Staff,on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)

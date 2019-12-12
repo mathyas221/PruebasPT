@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8" />
@@ -180,11 +181,11 @@
                                                             <div class="media-body border rounded-top">
                                                                 <ul class='float-left'
                                                                     style="color:#005a65;margin-left: 14px;margin-top: 10px">
-                                                                    <strong>{{ cli.author.first_name }}</strong>
+                                                                    <strong>{{ cli.author.username_staff }} </strong>
                                                                     <spam style="color:grey; margin-left: 10px">
                                                                         {{ cli.publish_date }}</spam>
                                                                 </ul>
-                                                                {% if cli.author.username_staff.pk == request.user.pk %}
+                                                                {% if cli.author.pk == staff.pk %}
                                                                 <!-- Modal de delete post -->
                                                                 <button type="button"
                                                                     class="btn btn-light float-right align-content-center"
@@ -268,7 +269,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                {% if cli.author.pk == request.user.pk %}
+                                                                {% if cli.author.pk == staff.pk %}
                                                                 <!-- Modal de editar post -->
                                                                 <button type="button"
                                                                     class="btn btn-light float-right align-content-center"
@@ -328,11 +329,11 @@
                                                             <div class="media-body border rounded-top">
                                                                 <ul class='float-left'
                                                                     style="color:#005a65;margin-top: 10px">
-                                                                    <strong>{{ com.author.first_name }}</strong>
+                                                                    <strong>{{ cli.author.username_staff }}</strong>
                                                                     <spam style="color:grey; margin-left: 10px">
                                                                         {{ com.publish_date }}</spam>
                                                                 </ul>
-                                                                {% if com.author.pk == request.user.pk %}
+                                                                {% if com.author.pk == staff.pk %}
                                                                 <!-- Modal eliminar comentario -->
                                                                 <button type="button"
                                                                     class="btn btn-light float-right align-content-center"
