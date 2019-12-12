@@ -1173,10 +1173,10 @@ def Email_password(request):
     if request.POST:
         print (request.POST)
         print('x')
-        print(User.objects.filter(email=request.POST['email']).exists())
-        if User.objects.filter(email=request.POST['email']).exists() == True:
-            users = User.objects.get(email = request.POST['email'])
-            print(users)
+        print(Staff.objects.filter(email=request.POST['email']).exists())
+        if Staff.objects.filter(email=request.POST['email']).exists() == True:
+            users = Staff.objects.get(email = request.POST['email'])
+            print(users.username_staff)
             if request.POST['email'] == str(users.email):
 
                 randomString()
@@ -1188,7 +1188,7 @@ def Email_password(request):
                     fail_silently=False
                 )
                 global user_pass
-                user_pass = users
+                user_pass = users.username_staff
                 return JsonResponse({'result':True})
         else:
             return JsonResponse({'result':False})
@@ -1199,6 +1199,7 @@ def Forgot_password(request):
     template = 'forgot_password.html'
     data = {}
     if request.POST:
+        print (request.POST)
         user_profile =User.objects.get(username=user_pass)
         user_profile.set_password(request.POST['pass'])
         user_profile.save()
