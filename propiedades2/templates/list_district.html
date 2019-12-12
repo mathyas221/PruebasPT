@@ -49,10 +49,36 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="{% url 'delete_district' cli.pk %}">
-                                    <button type="button" class="btn btn-primary">Eliminar</button>
-                                </a>
-
+                                    <button type="button"  class="btn btn-primary" data-pk="{{ cli.pk }}" data-toggle="modal"
+                                    data-target="#modal_{{ cli.pk }}">
+                                        Eliminar
+                                    </button>
+    
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="modal_{{ cli.pk }}" tabindex="-1" role="dialog"
+                                        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalCenterTitle">Confirmación de
+                                                        eliminación</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Estas seguro que deseas eliminar de forma permanente este distrito.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Volver</button>
+                                                    <button id="confirmar_eliminacion_{{cli.pk}}" data-pk="{{ cli.pk }}" type="button" 
+                                                    class = 'confirmar_eliminacion btn btn-primary'>Aceptar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                             </td>
                         </tr>
                     {% endfor %}
@@ -89,4 +115,44 @@
     </div>
     </body>
 {% endblock content %}
+<script src="{% static 'js/inspinia.js' %}"></script>
+<script src="{% static 'js/plugins/pace/pace.min.js' %}"></script>
+<script src="{% static 'js/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".confirmar_eliminacion").on('click', function () {
+            $.ajax({
+                url: '{% url "delete_district"%}',
+                type: 'POST',
+                data: {
+                    'pk': $(this).data('pk'),
+                    'valor': "True",
+                    'csrfmiddlewaretoken': '{{ csrf_token}}'
+                },
+                success: function (data) {
+                    if (data.result){
+                        window.location.href = "{% url 'list_district' %}"
+                    }
+                    else{
+                        swal({
+                            type: 'error',
+                            text: 'El distrito no se eliminó',
+                        }).then(function(){
+                            window.location = "{% url 'list_district' %}"
+                        });
+                    }
+                },
+                error: function () {
+                    swal({
+                            type: 'error',
+                            text: 'El distrito no se eliminó, debido a que se encuentra relacionado con alguna propiedad',
+                        }).then(function(){
+                            window.location = "{% url 'list_district' %}"
+                        });
+                }
+            });
+        })
+    });
+</script>
 </html>

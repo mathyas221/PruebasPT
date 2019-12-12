@@ -53,6 +53,27 @@
                 </div>
             </div>
         </div>
+        {% if total == 0 %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+            <strong>Hola, bienvenido a la plataforma!</strong> al parecer eres nuevo aqui, así que te explicaremos como
+            comenzar.
+            Aquí arriba se mostrarán los datos de todas las propiedades ingresadas en la plataforma, y aquí abajo, un
+            grafico respecto al
+            porcentaje de los atributos completados de cada propiedad.
+            <hr>
+            <p class="mb-0">Para comenzar a ingresar propiedades a la plataforma, lo primero que debes hacer es,
+                agregar
+                una <a href="{% url 'add_region' %}"><strong>región</strong></a>, agregar un <a
+                    href="{% url 'add_district' %}"><strong>distrito</strong></a> y agregar un <a
+                    href="{% url 'add_property' %}"><strong>uso de propiedad</strong></a>, no importa el orden en que lo
+                añadas,
+                lo importante es que esten estos datos ingresados. Teniendo esta información agregada podras
+                empezar a ingresar tus propiedades.</p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
         <div class="row">
             <div class="col sm-12 md-6 lg-6">
                 <div class="card border-dark mb-3" style="margin-top: 3%;max-width: 450px;">

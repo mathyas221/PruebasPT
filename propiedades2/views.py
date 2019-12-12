@@ -1263,13 +1263,15 @@ def edit_region(request, region_id):
     else:
         return render(request, template, data)
 
-def delete_region(request, region_id):
-    template = 'delete_region.html'
+def delete_region(request):
+    template = 'list_region.html'
     data = {}
-    data['info'] = Region.objects.get(pk = region_id)
     if request.method == 'POST':
+        print("--------------------")
+        print(request.POST.get('pk'))
+        print("--------------------")
         if request.POST['valor'] == 'True':
-            Region.objects.filter(pk = region_id).delete()
+            Region.objects.filter(pk = request.POST["pk"]).delete()
             return JsonResponse({'result': True})
         else:
             return JsonResponse({'result': False})
@@ -1360,13 +1362,12 @@ def edit_property(request, property_id):
     else:
         return render(request, template, data)
 
-def delete_property(request, property_id):
+def delete_property(request):
     template = 'delete_property.html'
     data = {}
-    data['info'] = Property.objects.get(pk = property_id)
     if request.method == 'POST':
         if request.POST['valor'] == 'True':
-            Property.objects.filter(pk = property_id).delete()
+            Property.objects.filter(pk = request.POST.get('pk')).delete()
             return JsonResponse({'result': True})
         else:
             return JsonResponse({'result': False})
@@ -1647,13 +1648,12 @@ def edit_district(request, district_id):
     else:
         return render(request, template, data)
 
-def delete_district(request, district_id):
+def delete_district(request,):
     template = 'delete_district.html'
     data = {}
-    data['info'] = District.objects.get(pk = district_id)
     if request.method == 'POST':
-        if request.POST['valor'] == 'True':
-            District.objects.filter(pk = district_id).delete()
+        if request.POST.get('valor') == 'True':
+            District.objects.filter(pk = request.POST.get("pk")).delete()
             return JsonResponse({'result': True})
         else:
             return JsonResponse({'result': False})

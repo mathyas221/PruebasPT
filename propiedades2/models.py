@@ -42,7 +42,7 @@ class Location(models.Model):
     number = models.PositiveIntegerField()
     commune = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.PROTECT)
     lot_number = models.PositiveIntegerField(blank=True, null=True)
     plot = models.CharField(max_length=100, blank=True, null=True)
 
@@ -206,17 +206,17 @@ class ArchitectureRecordAcq(models.Model):
     municipal_n = models.PositiveIntegerField(blank=True, null=True)
     n_building_permit = models.PositiveIntegerField(blank=True, null=True)
     # Documentos de arquitectura
-    expropriation_mun = models.ForeignKey(DocumentEx, on_delete=models.CASCADE, blank=True, null=True,
+    expropriation_mun = models.ForeignKey(DocumentEx, on_delete=models.PROTECT, blank=True, null=True,
                                           related_name='ExMunicipalidad')
-    cip = models.ForeignKey(DocumentCip, on_delete=models.CASCADE, blank=True, null=True,
+    cip = models.ForeignKey(DocumentCip, on_delete=models.PROTECT, blank=True, null=True,
                             related_name='Cip')
-    certified_number = models.ForeignKey(DocumentCn, on_delete=models.CASCADE, blank=True, null=True,
+    certified_number = models.ForeignKey(DocumentCn, on_delete=models.PROTECT, blank=True, null=True,
                                          related_name='NumCertificado')
-    blueprints = models.ForeignKey(DocumentBlue, on_delete=models.CASCADE, blank=True, null=True,
+    blueprints = models.ForeignKey(DocumentBlue, on_delete=models.PROTECT, blank=True, null=True,
                                    related_name='Planos')
-    building_permit = models.ForeignKey(DocumentBuildP, on_delete=models.CASCADE, blank=True, null=True,
+    building_permit = models.ForeignKey(DocumentBuildP, on_delete=models.PROTECT, blank=True, null=True,
                                         related_name='PerEdificacion')
-    municipal_reception = models.ForeignKey(DocumentMR, on_delete=models.CASCADE, blank=True, null=True,
+    municipal_reception = models.ForeignKey(DocumentMR, on_delete=models.PROTECT, blank=True, null=True,
                                             related_name='RecMunicipal')
 
 
@@ -225,8 +225,8 @@ class InternalAccountantsAcq(models.Model):
     value_construction = models.CharField(max_length=100, blank=True, null=True)
     acquiring_name = models.CharField(max_length=100, blank=True, null=True)
     supplier_name = models.CharField(max_length=100, blank=True, null=True)
-    contract_type = models.ForeignKey(DocumentTypeC, on_delete=models.CASCADE, related_name='TipoContratoAdquisicion')
-    others = models.ForeignKey(DocumentOther, on_delete=models.CASCADE, blank=True, null=True, related_name='Otros')
+    contract_type = models.ForeignKey(DocumentTypeC, on_delete=models.PROTECT, related_name='TipoContratoAdquisicion')
+    others = models.ForeignKey(DocumentOther, on_delete=models.PROTECT, blank=True, null=True, related_name='Otros')
 
 
 class NotaryAcquisition(models.Model):
@@ -236,13 +236,13 @@ class NotaryAcquisition(models.Model):
     # antecedentes de dominio
     previous_title = models.CharField(max_length=100, blank=True, null=True)
     current_title = models.CharField(max_length=100, blank=True, null=True)
-    writing = models.ForeignKey(DocumentWR, on_delete=models.CASCADE, blank=True, null=True,
+    writing = models.ForeignKey(DocumentWR, on_delete=models.PROTECT, blank=True, null=True,
                                 related_name='Escritura')
-    domain_certificate = models.ForeignKey(DocumentDC, on_delete=models.CASCADE, null=True, blank=True,
+    domain_certificate = models.ForeignKey(DocumentDC, on_delete=models.PROTECT, null=True, blank=True,
                                            related_name='CertificadoDominio')
-    prohibitions = models.ForeignKey(DocumentPH, on_delete=models.CASCADE, blank=True, null=True,
+    prohibitions = models.ForeignKey(DocumentPH, on_delete=models.PROTECT, blank=True, null=True,
                                      related_name='Prohibiciones')
-    expropriation_serviu = models.ForeignKey(DocumentEs, on_delete=models.CASCADE, blank=True, null=True,
+    expropriation_serviu = models.ForeignKey(DocumentEs, on_delete=models.PROTECT, blank=True, null=True,
                                              related_name='Serviu')
 
 
@@ -253,9 +253,9 @@ class SiiRecord(models.Model):
     total_debt = models.PositiveIntegerField(blank=True, null=True)
     ex_contributions = models.BooleanField(default=False)
     # SII - TGR
-    appraisal_certificate = models.ForeignKey(DocumentAc, on_delete=models.CASCADE, blank=True, null=True,
+    appraisal_certificate = models.ForeignKey(DocumentAc, on_delete=models.PROTECT, blank=True, null=True,
                                               related_name='CerAvaluo')
-    debt_certificate = models.ForeignKey(DocumentDB, on_delete=models.CASCADE, blank=True, null=True,
+    debt_certificate = models.ForeignKey(DocumentDB, on_delete=models.PROTECT, blank=True, null=True,
                                          related_name='CerNoDeuda')
 
 
@@ -263,22 +263,22 @@ class Acquisition(models.Model):
     name = models.CharField(max_length=200)
     role_number = models.PositiveIntegerField(blank=True, null=True)
     image = models.ImageField(upload_to='Fotos/', blank=True, null=True)
-    property_use = models.ForeignKey(Property, on_delete=models.CASCADE)
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    property_use = models.ForeignKey(Property, on_delete=models.PROTECT)
+    district = models.ForeignKey(District, on_delete=models.PROTECT)
+    location = models.OneToOneField(Location, on_delete=models.PROTECT)
     acquisition_date = models.DateTimeField(default=timezone.now)
     writing_data = models.CharField(max_length=5, choices=WRITING_DATA_CHOICE)
     number_AASI = models.PositiveIntegerField()
-    arquitecture = models.OneToOneField(ArchitectureRecordAcq, on_delete=models.CASCADE, blank=True, null=True,
+    arquitecture = models.OneToOneField(ArchitectureRecordAcq, on_delete=models.PROTECT, blank=True, null=True,
                                         related_name='arquitecture_acq')
-    internal = models.OneToOneField(InternalAccountantsAcq, on_delete=models.CASCADE, blank=True, null=True,
+    internal = models.OneToOneField(InternalAccountantsAcq, on_delete=models.PROTECT, blank=True, null=True,
                                     related_name='internal_acq')
-    notary = models.OneToOneField(NotaryAcquisition, on_delete=models.CASCADE, blank=True, null=True,
+    notary = models.OneToOneField(NotaryAcquisition, on_delete=models.PROTECT, blank=True, null=True,
                                   related_name='notary_acq')
-    SII = models.OneToOneField(SiiRecord, on_delete=models.CASCADE, blank=True, null=True, related_name='SII_acq')
+    SII = models.OneToOneField(SiiRecord, on_delete=models.PROTECT, blank=True, null=True, related_name='SII_acq')
     status = models.BooleanField(default=True)
     historyl = HistoricalRecords()
-    stats_acquisition = models.ForeignKey(Stats,blank=True, null=True, on_delete=models.CASCADE)
+    stats_acquisition = models.ForeignKey(Stats,blank=True, null=True, on_delete=models.PROTECT)
     def __str__(self):
         return "nombre: %s, rol: %s, uso: %s" % (self.name, self.role_number, self.property_use)
 
@@ -287,9 +287,9 @@ class Rent(models.Model):
     name = models.CharField(max_length=200)
     role_number = models.PositiveIntegerField(blank=True, null=True)
     image = models.ImageField(upload_to='Fotos/', blank=True, null=True)
-    property_use = models.ForeignKey(Property, on_delete=models.CASCADE)
-    district = models.ForeignKey(District, on_delete=models.CASCADE)
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
+    property_use = models.ForeignKey(Property, on_delete=models.PROTECT)
+    district = models.ForeignKey(District, on_delete=models.PROTECT)
+    location = models.OneToOneField(Location, on_delete=models.PROTECT)
     # antecedentes de arquitectura
     ground_surface = models.CharField(max_length=100, blank=True, null=True)
     square_m_build = models.CharField(max_length=100, blank=True, null=True)
@@ -299,19 +299,19 @@ class Rent(models.Model):
     # contables internos
     value_land = models.CharField(max_length=100, blank=True, null=True)
     value_construction = models.CharField(max_length=100, blank=True, null=True)
-    contract_type = models.OneToOneField(DocumentTypeC, blank=True, null=True, on_delete=models.CASCADE,
+    contract_type = models.OneToOneField(DocumentTypeC, blank=True, null=True, on_delete=models.PROTECT,
                                          related_name='TipoContratoArriendo')
     acquiring_name = models.CharField(max_length=100)
     supplier_name = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.BooleanField(default=True)
-    stats_rent = models.ForeignKey(Stats,blank=True, null=True, on_delete=models.CASCADE)
+    stats_rent = models.ForeignKey(Stats,blank=True, null=True, on_delete=models.PROTECT)
     def __str__(self):
         return "Nombre: %s" % (self.name)
 
 class Staff(models.Model):
-    username_staff = models.OneToOneField(User, on_delete=models.CASCADE)
+    username_staff = models.OneToOneField(User, on_delete=models.PROTECT)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=50)
     type_user = models.CharField(max_length=3, choices=POSITION_CHOICE)
@@ -327,8 +327,8 @@ class Post(models.Model):
     description = models.CharField(max_length=500)
     author = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)
-    acquisition = models.ForeignKey(Acquisition, on_delete=models.CASCADE, related_name='PostAcquisition',blank=True,null=True)
-    rent = models.ForeignKey(Rent, on_delete=models.CASCADE, related_name='PostRent',blank=True,null=True)
+    acquisition = models.ForeignKey(Acquisition, on_delete=models.PROTECT, related_name='PostAcquisition',blank=True,null=True)
+    rent = models.ForeignKey(Rent, on_delete=models.PROTECT, related_name='PostRent',blank=True,null=True)
 
     def getDiference(self):
         now = datetime.now(timezone.utc)
@@ -346,7 +346,7 @@ class Change_property(models.Model):
         return "Username: %s, Fecha de Cambio: %s" % (self.user, self.publish_date)
 
 class Comment(models.Model):
-    post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey('Post', on_delete=models.PROTECT, null=True)
     description = models.CharField(max_length=500)
     author = models.ForeignKey(Staff,on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)
