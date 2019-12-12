@@ -42,7 +42,7 @@ class Location(models.Model):
     number = models.PositiveIntegerField()
     commune = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    region = models.ForeignKey(Region, on_delete=models.PROTECT)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
     lot_number = models.PositiveIntegerField(blank=True, null=True)
     plot = models.CharField(max_length=100, blank=True, null=True)
 

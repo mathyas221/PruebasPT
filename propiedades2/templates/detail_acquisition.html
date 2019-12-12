@@ -18,9 +18,8 @@
         <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
         <link href = "https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css"  rel = "stylesheet" >
         <!-- CDN de mapbox -->
-        <link href='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
-        <script src='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
-        <link href='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
+        <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js"></script>
+        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css" rel="stylesheet" />
     </head>
     <body style="background-color:#FFFFFF  ">
     <div class="container" style="height:50%">
@@ -568,7 +567,7 @@
     <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
     <script>
         $(document).ready(function(){
-            mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGgwMm1qbjBkZGgzbnBuNWR4c2dhcXcifQ.-CKew9xYdZql0kyxzZuHnQ';
+            mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGd6OTVoZjA2amkzY3A4OGk5aXU2eXcifQ.W8sXY3UnNP91jzTzW1W2rw';
             var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
             var calle = '{{ acquisition.location.street }} {{ acquisition.location.number }} {{ acquisition.location.commune }} {{ acquisition.location.city }}.json?country=CL&';
             var token = 'access_token=pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGgwMm1qbjBkZGgzbnBuNWR4c2dhcXcifQ.-CKew9xYdZql0kyxzZuHnQ';
