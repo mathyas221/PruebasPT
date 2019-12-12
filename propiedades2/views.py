@@ -1119,7 +1119,7 @@ def edit_password(request, staff_id):
     log = Staff.objects.get(pk=staff_id)
     logu = User.objects.get(pk=request.user.pk)
     if request.method == 'POST':
-        user = User.objects.get(username = logu.username_staff)
+        user = User.objects.get(username = log.username_staff)
         old_password = request.POST.get('old_password')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
