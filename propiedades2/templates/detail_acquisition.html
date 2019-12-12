@@ -18,8 +18,9 @@
         <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet">
         <link href = "https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css"  rel = "stylesheet" >
         <!-- CDN de mapbox -->
-        <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js"></script>
-        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css" rel="stylesheet" />
+        <link href='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
+        <script src='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css' rel='stylesheet' />
     </head>
     <body style="background-color:#FFFFFF  ">
     <div class="container" style="height:50%">
@@ -222,7 +223,7 @@
                                                 <ul class= 'float-left' style="color:#005a65;margin-left: 14px;margin-top: 10px">
                                                     <strong>{{ cli.author.first_name }}</strong><spam style="color:grey; margin-left: 10px"> {{ cli.publish_date }}</spam>
                                                 </ul>
-                                                {% if cli.author.username_staff.pk == request.user.pk %}
+                                                {% if cli.author.pk == request.user.pk %}
                                                 <!-- Modal de delete post -->
                                                 <button type="button" class="btn btn-light float-right align-content-center" data-toggle="modal" data-target="#del_modal_{{ cli.pk }}" style="margin-top: 6px"><ion-icon name="close"></ion-icon></button>
                                                 <div class="modal fade" id="del_modal_{{ cli.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -266,7 +267,7 @@
                                                     </div>
                                                   </div>
                                                 </div>
-                                                {% if cli.author.username_staff.pk == request.user.pk %}
+                                                {% if cli.author.pk == request.user.pk %}
                                                 <!-- Modal de editar post -->
                                                 <button type="button" class="btn btn-light float-right align-content-center" data-toggle="modal" data-target="#modal_{{ cli.pk }}" style="margin-top: 6px"><ion-icon name="create"></ion-icon></button>
                                                 <div class="modal fade" id="modal_{{ cli.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -303,7 +304,7 @@
                                                 <ul class= 'float-left' style="color:#005a65;margin-top: 10px">
                                                     <strong>{{ com.author.first_name }}</strong><spam style="color:grey; margin-left: 10px"> {{ com.publish_date }}</spam>
                                                 </ul>
-                                                {% if com.author.username_staff.pk == request.user.pk %}
+                                                {% if com.author.pk == request.user.pk %}
                                                 <!-- Modal eliminar comentario -->
                                                 <button type="button" class="btn btn-light float-right align-content-center" data-toggle="modal" data-target="#del_comment_{{ com.pk }}" style="margin-top: 6px"><ion-icon name="close"></ion-icon></button>
                                                 <div class="modal fade" id="del_comment_{{ com.pk }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -570,7 +571,7 @@
             mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGd6OTVoZjA2amkzY3A4OGk5aXU2eXcifQ.W8sXY3UnNP91jzTzW1W2rw';
             var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
             var calle = '{{ acquisition.location.street }} {{ acquisition.location.number }} {{ acquisition.location.commune }} {{ acquisition.location.city }}.json?country=CL&';
-            var token = 'access_token=pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGgwMm1qbjBkZGgzbnBuNWR4c2dhcXcifQ.-CKew9xYdZql0kyxzZuHnQ';
+            var token = 'access_token=pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGd6OTVoZjA2amkzY3A4OGk5aXU2eXcifQ.W8sXY3UnNP91jzTzW1W2rw';
             var consulta = url.concat(calle);
             var consulta_final = consulta.concat(token);
             fetch(consulta_final)

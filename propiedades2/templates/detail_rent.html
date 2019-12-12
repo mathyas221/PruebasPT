@@ -268,7 +268,7 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                {% if cli.author.username_staff.pk == request.user.pk %}
+                                                                {% if cli.author.pk == request.user.pk %}
                                                                 <!-- Modal de editar post -->
                                                                 <button type="button"
                                                                     class="btn btn-light float-right align-content-center"
@@ -332,7 +332,7 @@
                                                                     <spam style="color:grey; margin-left: 10px">
                                                                         {{ com.publish_date }}</spam>
                                                                 </ul>
-                                                                {% if com.author.username_staff.pk == request.user.pk %}
+                                                                {% if com.author.pk == request.user.pk %}
                                                                 <!-- Modal eliminar comentario -->
                                                                 <button type="button"
                                                                     class="btn btn-light float-right align-content-center"
@@ -527,12 +527,13 @@
 <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
 <script>
     $(document).ready(function () {
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGgwMm1qbjBkZGgzbnBuNWR4c2dhcXcifQ.-CKew9xYdZql0kyxzZuHnQ';
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGd6OTVoZjA2amkzY3A4OGk5aXU2eXcifQ.W8sXY3UnNP91jzTzW1W2rw';
         var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
-        var calle = '{{ acquisition.location.street }} {{ acquisition.location.number }} {{ acquisition.location.commune }} {{ acquisition.location.city }}.json?country=CL&';
-        var token = 'access_token=pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGgwMm1qbjBkZGgzbnBuNWR4c2dhcXcifQ.-CKew9xYdZql0kyxzZuHnQ';
+        var calle = '{{ rent.location.street }} {{ rent.location.number }} {{ rent.location.commune }} {{ rent.location.city }}.json?country=CL&';
+        var token = 'access_token=pk.eyJ1IjoiZ29uemFuZHJlczIzIiwiYSI6ImNrMGd6OTVoZjA2amkzY3A4OGk5aXU2eXcifQ.W8sXY3UnNP91jzTzW1W2rw';
         var consulta = url.concat(calle);
         var consulta_final = consulta.concat(token);
+        alert(consulta_final)
         fetch(consulta_final)
             .then(res => res.json())
             .then(data => {
