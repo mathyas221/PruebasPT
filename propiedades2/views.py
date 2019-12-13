@@ -1105,11 +1105,8 @@ def Email_password(request):
     template = 'email_password.html'
     data = {}
     if request.POST:
-        print (request.POST)
-        print('x')
-        print(Staff.objects.filter(email=request.POST['email']).exists())
-        if Staff.objects.filter(email=request.POST['email']).exists() == True:
-            users = Staff.objects.get(email = request.POST['email'])
+        if Staff.objects.filter(email=request.POST.get('email')).exists() == True:
+            users = Staff.objects.get(email=request.POST.get('email'))
             print(users.username_staff)
             if request.POST['email'] == str(users.email):
 
