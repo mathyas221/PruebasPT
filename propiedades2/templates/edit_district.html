@@ -38,8 +38,8 @@
                 url: '{% url 'edit_district' info.pk %}',
                 type: 'POST',
                 data: {
-                    'name': $("#nombre").val(),
-                    'acronym': $("#acronimo").val(),
+                    'name': $("#name").val(),
+                    'acronym': $("#acronym").val(),
                     'csrfmiddlewaretoken': '{{ csrf_token}}'
                 },
                 success: function (data) {

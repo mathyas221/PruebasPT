@@ -1642,10 +1642,12 @@ def edit_district(request, district_id):
     data['staff'] = Staff.objects.get(username_staff = request.user)
     template = 'edit_district.html'
     data['info'] = District.objects.get(pk = district_id)
-    print(data)
+    print(district_id)
     if request.method == 'POST':
         nombre = request.POST.get('name')
         acronimo = request.POST.get('acronym')
+        print(nombre)
+        print(acronimo)
         District.objects.filter(pk = district_id).update(name = nombre, acronym = acronimo)
 
         return JsonResponse({'result': True})
