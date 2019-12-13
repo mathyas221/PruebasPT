@@ -1238,17 +1238,22 @@ def add_region(request):
 @login_required(login_url='LOGIN')
 def edit_region(request, region_id):
     data = {}
-    template = 'edit_region.html'
     data['staff'] = Staff.objects.get(username_staff = request.user)
+    template = 'edit_region.html'
+    nombre = request.POST.get('name')
+    acronimo = request.POST.get('acronym')
     data['info'] = Region.objects.get(pk = region_id)
-    if request.method == 'POST':
-        nombre = request.POST.get('name')
-        acronimo = request.POST.get('acronym')
-        Region.objects.filter(pk = region_id).update(name = nombre, acronym = acronimo)
-
-        return JsonResponse({'result': True})
+    if Region.objects.filter(name = nombre).exclude(pk = region_id).exists() == False:
+        if len(str(acronimo))<=5:
+            if request.method == 'POST':  
+                Region.objects.filter(pk = region_id).update(name = nombre, acronym = acronimo)
+                return JsonResponse({'result': True})
+        else:
+            print("devolvio max")
+            return JsonResponse({'result': 'Max'})
     else:
-        return render(request, template, data)
+        return JsonResponse({'result':False})
+    return render(request, template, data)
 
 @login_required(login_url='LOGIN')
 def delete_region(request):
@@ -1332,28 +1337,20 @@ def edit_property(request, property_id):
     data = {}
     data['staff'] = Staff.objects.get(username_staff = request.user)
     template = 'edit_property.html'
+    nombre = request.POST.get('name')
+    acronimo = request.POST.get('acronym')
     data['info'] = Property.objects.get(pk = property_id)
-    x = Property.objects.get(pk = property_id)
-    if request.method == 'POST':
-        nombre = request.POST.get('name')
-        acronimo = request.POST.get('acronym')
-        if x.name != nombre:
-            x.name = nombre
-            if x.acronym != acronimo:
-                x.acronym = acronimo
-                x.save()
-            else:
-                x.save()
+    if Property.objects.filter(name = nombre).exclude(pk = property_id).exists() == False:
+        if len(str(acronimo))<=5:
+            if request.method == 'POST':  
+                Property.objects.filter(pk = property_id).update(name = nombre, acronym = acronimo)
+                return JsonResponse({'result': True})
         else:
-            if x.acronym != acronimo:
-                x.acronym = acronimo
-                x.save()
-            else:
-                x.save()
-
-        return JsonResponse({'result': True})
+            print("devolvio max")
+            return JsonResponse({'result': 'Max'})
     else:
-        return render(request, template, data)
+        return JsonResponse({'result':False})
+    return render(request, template, data)
 
 @login_required(login_url='LOGIN')
 def delete_property(request):
@@ -1641,18 +1638,21 @@ def edit_district(request, district_id):
     data = {}
     data['staff'] = Staff.objects.get(username_staff = request.user)
     template = 'edit_district.html'
+    nombre = request.POST.get('name')
+    acronimo = request.POST.get('acronym')
     data['info'] = District.objects.get(pk = district_id)
-    print(district_id)
-    if request.method == 'POST':
-        nombre = request.POST.get('name')
-        acronimo = request.POST.get('acronym')
-        print(nombre)
-        print(acronimo)
-        District.objects.filter(pk = district_id).update(name = nombre, acronym = acronimo)
-
-        return JsonResponse({'result': True})
+    if District.objects.filter(name = nombre).exclude(pk = district_id).exists() == False:
+        if len(str(acronimo))<=5:
+            print('paso len')
+            if request.method == 'POST':
+                District.objects.filter(pk = district_id).update(name = nombre, acronym = acronimo)
+                return JsonResponse({'result': True})
+        else:
+            print("devolvio max")
+            return JsonResponse({'result': 'Max'})
     else:
-        return render(request, template, data)
+        return JsonResponse({'result':False})
+    return render(request, template, data)
 
 @login_required(login_url='LOGIN')
 def delete_district(request,):

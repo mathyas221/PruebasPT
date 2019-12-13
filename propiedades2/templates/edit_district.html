@@ -35,7 +35,7 @@
     $(document).ready(function () {
         $("#info_district").on('click', function () {
             $.ajax({
-                url: '{% url 'edit_district' info.pk %}',
+                url: '{% url "edit_district" info.pk %}',
                 type: 'POST',
                 data: {
                     'name': $("#name").val(),
@@ -43,10 +43,18 @@
                     'csrfmiddlewaretoken': '{{ csrf_token}}'
                 },
                 success: function (data) {
-                    if (data.result){
+                    console.log(data)
+                    if (data.result == true){
                         window.location.href = "{% url 'list_district' %}"
+
+                    }else if(data.result  == 'Max'){
+                      swal({
+                        title: 'Oops...',
+                        text: 'El acrónimo supero el largo máximo',
+                        type: 'error',
+                      })
                     }
-                    else {
+                    else if(data.result == false){
                         swal({
                             title: 'Problemas',
                             text: 'El distrito ya existe',

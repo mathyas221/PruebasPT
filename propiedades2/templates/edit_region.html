@@ -17,9 +17,9 @@
         <h1>Editar Región</h1>
         <div class="form-group">
             <label for="Nameofdistrict">Nombre de la región:</label>
-            <input type="text" id="nombre" value="{{ info.name }}" class="form-control" placeholder="Nombre">
+            <input type="text" id="name" value="{{ info.name }}" class="form-control" placeholder="Nombre">
             <label for="Acronycofdistrict">Acrónimo:</label>
-            <input type="text" id="acronimo" value="{{ info.acronym }}" class="form-control" placeholder="Acrónimo">
+            <input type="text" id="acronym" value="{{ info.acronym }}" class="form-control" placeholder="Acrónimo">
         </div>
         <button type="button" id="info_region" class="btn btn-primary"> ENVIAR</button>
     </div>
@@ -38,33 +38,39 @@
         $(document).ready(function () {
             $("#info_region").on('click', function () {
                 $.ajax({
-                    url: '{% url 'edit_region' info.pk %}',
+                    url: '{% url "edit_region" info.pk %}',
                     type: 'POST',
                     data: {
-                        'name': $("#nombre").val(),
-                        'acronym': $("#acronimo").val(),
-                        'csrfmiddlewaretoken': '{{ csrf_token}}'
-                    },
-                    success: function (data) {
-                        if (data.result){
-                            
-                            window.location.href = "{% url 'list_region' %}"
-                        }
-                        else {
-                            
-                            swal({
-                                title: 'Problemas',
-                                text: 'La región ya existe',
-                                type: 'error'
-                            })
-                        }
-                    },
-                    error: function () {
-                        alert('error')
+                    'name': $("#name").val(),
+                    'acronym': $("#acronym").val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token}}'
+                },
+                success: function (data) {
+                    console.log(data)
+                    if (data.result == true){
+                        window.location.href = "{% url 'list_region' %}"
+
+                    }else if(data.result  == 'Max'){
+                      swal({
+                        title: 'Oops...',
+                        text: 'El acrónimo supero el largo máximo',
+                        type: 'error',
+                      })
                     }
-                });
-            })
-        });
-    </script>
+                    else if(data.result == false){
+                        swal({
+                            title: 'Problemas',
+                            text: 'La región ya existe',
+                            type: 'error'
+                        })
+                    }
+                },
+                error: function () {
+                    alert('error')
+                }
+            });
+        })
+    });
+</script>
 
 </html>

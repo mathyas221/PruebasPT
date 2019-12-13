@@ -17,11 +17,11 @@
         <h1>Editar uso de propiedad</h1>
         <div class="form-group">
             <label for="Nameofdistrict">Nombre de uso de propiedad:</label>
-            <input type="text" id="nombre" value="{{ info.name }}" class="form-control" placeholder="Nombre">
+            <input type="text" id="name" value="{{ info.name }}" class="form-control" placeholder="Nombre">
             <label for="Acronycofdistrict">Acrónimo:</label>
-            <input type="text" id="acronimo" value="{{ info.acronym }}" class="form-control" placeholder="Acrónimo">
+            <input type="text" id="acronym" value="{{ info.acronym }}" class="form-control" placeholder="Acrónimo">
         </div>
-        <button type="button" id="info_region" class="btn btn-primary"> ENVIAR</button>
+        <button type="button" id="info_property" class="btn btn-primary"> ENVIAR</button>
     </div>
 </head>
 <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
@@ -36,24 +36,31 @@
 
 <script>
     $(document).ready(function () {
-        $("#info_region").on('click', function () {
+        $("#info_property").on('click', function () {
             $.ajax({
-                url: '{% url 'edit_property' info.pk %}',
+                url: '{% url "edit_property" info.pk %}',
                 type: 'POST',
                 data: {
-                    'name': $("#nombre").val(),
-                    'acronym': $("#acronimo").val(),
+                    'name': $("#name").val(),
+                    'acronym': $("#acronym").val(),
                     'csrfmiddlewaretoken': '{{ csrf_token}}'
                 },
                 success: function (data) {
-                    if (data.result) {
+                    console.log(data)
+                    if (data.result == true){
                         window.location.href = "{% url 'list_property' %}"
+
+                    }else if(data.result  == 'Max'){
+                      swal({
+                        title: 'Oops...',
+                        text: 'El acrónimo supero el largo máximo',
+                        type: 'error',
+                      })
                     }
-                    else {
-                        
+                    else if(data.result == false){
                         swal({
                             title: 'Problemas',
-                            text: 'La región ya existe',
+                            text: 'El tipo de propiedad ya existe',
                             type: 'error'
                         })
                     }
