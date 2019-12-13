@@ -28,21 +28,9 @@
             </div>
         {% endif %}
         <div class="row">
-            <div class="col-md-10">
-                <form class="form mb-auto" method="GET" action="{% url 'search' %}">
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" style="display:none" name="selection" type="radio" value="2"
-                               id="defaultCheck2" checked>
-                        <label class="form-check-label" for="defaultCheck2">
-                        </label>
-                    </div>
-                    <input type="text" class="form-control ml-sm-2" name="q" value="{{ request.GET.q }}"
-                           placeholder="Hola! ¿Buscas algo?..">
-                </form>
-            </div>
             {% if staff.type_user == 'DIG' or staff.type_user == 'ADM' %}
                 <div class="col-md-2">
-                    <a class="float-right" href="{% url 'add_acquisition' %}" style="margin-top: 15%;">
+                    <a class="float-right" href="{% url 'create_staff' %}" style="margin-top: 15%;">
                         <button type="button" class="btn btn-success">Agregar</button>
                     </a>
                 </div>

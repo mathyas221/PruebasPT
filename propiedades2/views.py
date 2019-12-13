@@ -88,7 +88,7 @@ def index(request):
     print(data['property_per_50'])
     print(data['property_per_75'])
     print(data['property_per_100'])
-    
+
 
     data['acquisition_d'] = Acquisition.objects.filter(status=False)
     #rentadas
@@ -428,7 +428,7 @@ def Add_rent(request):
                                 total += 1
                             else:
                                 total += 1
-                        
+
                             #y es donde se modifica el stats correspondiente a la propiedad
                     rent.stats_rent = create_stats(total-1, contestado-1)
                     rent.save()
@@ -686,7 +686,7 @@ def Edit_acquisition(request, acq_id):
                         stats.percentage = (float(valores[1])/float(valores[0]))*100
                         stats.save()
                     return JsonResponse({})
-            
+
             if request.POST.get("commentacq") == None:
                 pass
             else:
@@ -994,60 +994,6 @@ def search(request):
         return render(request, 'list_total.html')
 
 @login_required(login_url='LOGIN')
-def createstaff(request):
-    data = {}
-    data['title'] = 'Agregar Personal'
-    data['staff'] = Staff.objects.get(username_staff=request.user)
-    if data['staff'].type_user == 'ADM':
-        print('primer if')
-        if request.method == 'POST':
-            print('segundo if')
-            data['form'] = StaffForm(request.POST)
-            data['form2'] = UserForm(request.POST)
-            print(request.POST['password1'])
-            print(request.POST['password2'])
-            if data['form2'].is_valid():
-                print('tercer if')
-                if data['form'].is_valid():
-                    print('cuarto if')
-                    sav = data['form'].save(commit=False)
-                    password = request.POST['password1']
-                    print(password)
-                    password2 = request.POST['password2']
-                    print(password2)
-                    username = request.POST['username']
-                    print(username)
-                    if User.objects.filter(username = username).exists() == False:
-                        if User.objects.filter(email = request.POST['email']).exists() == False:
-                            if password == password2:
-                                print('quinto if')
-                                sav2 = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'], first_name=request.POST['first_name'], last_name=request.POST['last_name'], email=request.POST['email'],)
-                                sav.username_staff = sav2
-                                sav.save()
-                                return HttpResponseRedirect(reverse('createstaff'))
-                            else:
-                                print('primer else')
-                                data['resultado'] = 'Las contraseñas son diferentes'
-                                return render(request, 'createstaff.html', data)
-                        else:
-                            data['resultado'] = 'El email ya esta registrado'
-                            return render(request, 'createstaff.html', data)
-                    else:
-                        data['resultado'] = 'El nombre de usuario ya esta registrado'
-                        return render(request, 'createstaff.html', data)
-        else:
-            print('Segundo else')
-            data['form2'] = UserForm()
-            data['form'] = StaffForm()
-            template = 'createstaff.html'
-            return render(request, template, data)
-    else:
-        print('Tercer else')
-        return HttpResponseRedirect(reverse('list_total'))
-        template = 'createstaff.html'
-
-        return render(request, template, data)
-@login_required(login_url='LOGIN')
 def list_staff(request):
     data = {}
     staff = Staff.objects.get(username_staff = request.user)
@@ -1124,14 +1070,18 @@ def edit_password(request, staff_id):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         if log.type_user == 'ADM':
+            print(logu.check_password(old_password))
             if logu.check_password(old_password) == True:
-                if password1 == password2:
-                    print('adm 3')
-                    user.set_password(password1)
-                    user.save()
-                    return JsonResponse({'result': 'True'})
+                if password_valid(password1) == True:
+                    if password1 == password2:
+                        print('adm 3')
+                        user.set_password(password1)
+                        user.save()
+                        return JsonResponse({'result': 'True'})
+                    else:
+                        return JsonResponse({'result': 'difpass'})
                 else:
-                    return JsonResponse({'result': 'difpass'})
+                    return JsonResponse({'result':'valid'})
             else:
                 return JsonResponse({'result': 'incpassadm'})
         else:
@@ -1182,12 +1132,15 @@ def Email_password(request):
 def Forgot_password(request):
     template = 'forgot_password.html'
     data = {}
+    x = user_pass
     if request.POST:
-        print (request.POST)
-        user_profile =User.objects.get(username=user_pass)
-        user_profile.set_password(request.POST['pass'])
-        user_profile.save()
-        return JsonResponse({'result':True})
+        if password_valid(request.POST.get('pass')) == True:
+            user_profile =User.objects.get(username=x)
+            user_profile.set_password(request.POST['pass'])
+            user_profile.save()
+            return JsonResponse({'result':'True'})
+        else:
+            return JsonResponse({'result': 'valid'})
     return render(request, template, data)
 
 def Validate(request):
@@ -1245,7 +1198,7 @@ def edit_region(request, region_id):
     data['info'] = Region.objects.get(pk = region_id)
     if Region.objects.filter(name = nombre).exclude(pk = region_id).exists() == False:
         if len(str(acronimo))<=5:
-            if request.method == 'POST':  
+            if request.method == 'POST':
                 Region.objects.filter(pk = region_id).update(name = nombre, acronym = acronimo)
                 return JsonResponse({'result': True})
         else:
@@ -1342,7 +1295,7 @@ def edit_property(request, property_id):
     data['info'] = Property.objects.get(pk = property_id)
     if Property.objects.filter(name = nombre).exclude(pk = property_id).exists() == False:
         if len(str(acronimo))<=5:
-            if request.method == 'POST':  
+            if request.method == 'POST':
                 Property.objects.filter(pk = property_id).update(name = nombre, acronym = acronimo)
                 return JsonResponse({'result': True})
         else:
@@ -1396,13 +1349,18 @@ def create_staff(request):
                     sav = data['form'].save(commit=False)
                     password = request.POST.get('password1')
                     password2 = request.POST.get('password2')
-                    print(password_valid(password))
                     if password_valid(password) == True:
                         if password == password2:
-                            sav2 = User.objects.create_user(username=request.POST.get('username'), password=request.POST.get('password1'), first_name=request.POST.get('first_name'), last_name=request.POST.get('last_name'), email=request.POST.get('email'))
-                            sav.username_staff = sav2
-                            sav.save()
-                            return JsonResponse({'result': 'True'})
+                            if User.objects.filter(username = request.POST.get('username')).exists() == False:
+                                if Staff.objects.filter(email = request.POST.get('email')).exists() == False:
+                                    sav2 = User.objects.create_user(username=request.POST.get('username'), password=request.POST.get('password1'), first_name=request.POST.get('first_name'), last_name=request.POST.get('last_name'), email=request.POST.get('email'))
+                                    sav.username_staff = sav2
+                                    sav.save()
+                                    return JsonResponse({'result': 'True'})
+                                else:
+                                    return JsonResponse({'result':'email'})
+                            else:
+                                return JsonResponse({'result': 'username'})
                         else:
                             return JsonResponse({'result': 'password'})
                     else:
@@ -1415,7 +1373,7 @@ def create_staff(request):
                     return render(request, template, data)
             else:
                 if User.objects.filter(username = request.POST.get('username')).exists():
-                    if User.objects.filter(email = request.POST.get('email')).exists():
+                    if Staff.objects.filter(email = request.POST.get('email')).exists():
                         return JsonResponse({'result':'email'})
                     else:
                         return JsonResponse({'result': 'username'})
@@ -1706,7 +1664,7 @@ def generate_report_excel(request):
             if request.POST.get('filtro') == 'uso_true':
                 object_list_acquisition = Acquisition.objects.filter(
                     Q(property_use__name__contains=query)).order_by('id')
-    
+
         if object_list_acquisition.exists():
             response = HttpResponse(content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename=Reporte_propiedades.xlsx'
@@ -1715,7 +1673,7 @@ def generate_report_excel(request):
             datetime = str(time)
             excel.date = time
             filename_excel = 'Reporte_propiedades' + datetime + '.xlsx'
-            
+
             # Hoja de trabajo
             wb = Workbook()
             ws = wb.active
@@ -1881,7 +1839,7 @@ def generate_report_excel(request):
             me = 'Sin registro'
             rm = 'Sin registro'
             pe = 'Sin registro'
-            
+
             cont = 7
             for prop in object_list_acquisition:
                 #Recorrer objetos
@@ -2076,7 +2034,7 @@ def generate_report_excel(request):
                 ws.cell(row=cont, column=60).style = my_style2
 
                 cont= cont+1
-        
+
             wb.save('media/Reportes/'+filename_excel)
             return JsonResponse({'url': '/media/Reportes/'+filename_excel})
     else:
@@ -2106,7 +2064,7 @@ def walk_object(id):
         else:
             total += 1
             contestado += 1
-    if exp_num.archive != '':   
+    if exp_num.archive != '':
         total += 1
         contestado += 1
     else:
