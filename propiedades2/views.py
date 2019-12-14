@@ -457,7 +457,7 @@ def Edit_acquisition(request, acq_id):
             print('----------------------------------')
             print(propiedad.arquitecture.expropriation_mun.pk)
             print('----------------------------------')
-            data['formAcquisition'] = AcquisitionForm(request.POST, request.FILES, instance=Acquisition.objects.get(pk=acq_id))
+            data['formAcquisition'] = AcquisitionForm(request.POST, request.FILES, instance=propiedad)
             data['formLocation'] = LocationForm(request.POST, request.FILES, instance = propiedad.location)
             # Arquitecture
             data['formArquitecture'] = ArquitectureForm(request.POST, request.FILES, instance = propiedad.arquitecture)
@@ -943,6 +943,7 @@ def list_total(request):
 def search(request):
     template = 'search.html'
     data = {}
+    data['staff'] = Staff.objects.get(username_staff = request.user)
     data[request] = request
     if request.method == "GET":
         selection = request.GET.get('selection')
@@ -1645,22 +1646,22 @@ def generate_report_excel(request):
         if request.POST.get('filtro') != None:
             if request.POST.get('filtro') == 'comuna_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__commune__contains=query)).order_by('id')
+                    Q(location__commune__icontains=query)).order_by('id')
             if request.POST.get('filtro') == 'ciudad_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__city__contains=query)).order_by('id')
+                    Q(location__city__icontains=query)).order_by('id')
             if request.POST.get('filtro') == 'region_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__region__name__contains=query)).order_by('id')
+                    Q(location__region__name__icontains=query)).order_by('id')
             if request.POST.get('filtro') == 'distrito_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(location__region__name__contains=query)).order_by('id')
-            if request.POST.get('filtro') == 'tipo_true':
+                    Q(district__name__icontains=query)).order_by('id')
+            if request.POST.get('filtro') == 'select_uso':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(writing_data__contains=query)).order_by('id')
+                    Q(writing_data__icontains=query)).order_by('id')
             if request.POST.get('filtro') == 'uso_true':
                 object_list_acquisition = Acquisition.objects.filter(
-                    Q(property_use__name__contains=query)).order_by('id')
+                    Q(property_use__name__icontains=query)).order_by('id')
 
         if object_list_acquisition.exists():
             response = HttpResponse(content_type='application/ms-excel')

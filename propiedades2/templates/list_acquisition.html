@@ -94,13 +94,6 @@
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="exampleRadios"
-                                            id="filter_tipo" value="tipo_true">
-                                        <label class="form-check-label" for="filter_tipo">
-                                            Tipo escritura
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="exampleRadios"
                                             id="filter_uso" value="uso_true">
                                         <label class="form-check-label" for="filter_uso">
                                             Uso de propiedad
@@ -113,6 +106,16 @@
                                         <input type="text" class="form-control" id="filter_text"
                                             placeholder="Escriba aquí">
                                     </div>
+                                    <label class="form-check-label" for="filter_tipo">
+                                        o seleccion un tipo escritura
+                                    </label>
+                                    <select class="form-control" id="select_uso">
+                                        <option value="">-</option>
+                                        <option value="COM">Compraventa</option>
+                                        <option value="DON">Donación</option>
+                                        <option value="SUB">Subdivisión</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -227,19 +230,60 @@
     </div>
 </body>
 {% endblock content %}
-
-</html>
 <script src="{% static 'js/plugins/sweetalert2/sweetalert2.all.min.js' %}"></script>
 <script>
     $(document).ready(function () {
         $('#enviar_reporte').on('click', function () {
-            if ($('#filter_text').val() != '') {
+            if ($("input:radio[name ='exampleRadios']:checked").val() != undefined) {
+                if ($('#filter_text').val() != '') {
+                    $.ajax({
+                        url: '{% url "generate_report" %}',
+                        type: 'POST',
+                        data: {
+                            'filtro': $("input:radio[name ='exampleRadios']:checked").val(),
+                            'texto': $('#filter_text').val(),
+                            'csrfmiddlewaretoken': '{{ csrf_token}}'
+                        },
+                        success: function (data) {
+                            if (data.url) {
+                                window.location.href = data.url
+                                swal({
+                                    title: 'Excelente!',
+                                    text: 'se ha generado el reporte',
+                                    type: 'success',
+                                })
+                            } else if (data.result == 'False') {
+                                swal({
+                                    title: 'Oops...',
+                                    text: 'No se pudo filtrar',
+                                    type: 'error',
+                                })
+                            }
+                        },
+                        error: function () {
+                            swal({
+                                title: 'Oops...',
+                                text: 'No se pudo filtar',
+                                type: 'error',
+                            })
+                        }
+                    });
+                }
+                else {
+                    swal({
+                        title: 'Oops...',
+                        text: 'Agrega algo para filtrar',
+                        type: 'error',
+                    })
+                }
+            }
+            else if ($('#select_uso').val() != '') {
                 $.ajax({
                     url: '{% url "generate_report" %}',
                     type: 'POST',
                     data: {
-                        'filtro': $("input:radio[name ='exampleRadios']:checked").val(),
-                        'texto': $('#filter_text').val(),
+                        'filtro': 'select_uso',
+                        'texto': $('#select_uso').val(),
                         'csrfmiddlewaretoken': '{{ csrf_token}}'
                     },
                     success: function (data) {
@@ -253,7 +297,7 @@
                         } else if (data.result == 'False') {
                             swal({
                                 title: 'Oops...',
-                                text: 'No se pudo filtar',
+                                text: 'No se pudo filtrar',
                                 type: 'error',
                             })
                         }
@@ -265,15 +309,10 @@
                             type: 'error',
                         })
                     }
-                });
-            }
-            else {
-                swal({
-                    title: 'Oops...',
-                    text: 'Agrega algo para filtrar',
-                    type: 'error',
                 })
             }
         })
     });
 </script>
+
+</html>
