@@ -765,10 +765,11 @@ def Edit_rent(request, rent_id):
     if data['staff'].type_user == 'DIG' or data['staff'].type_user == 'ADM':
         total = 0
         contestado = 0
-        if propiedad.contract_type.archive != '':
-            contestado += 1
-        if propiedad.image != '':
-            contestado +=1
+        #if propiedad.contract_type.archive != '':
+        #    contestado += 1
+        #if propiedad.image != '':
+        #    contestado +=1
+        #    total += 1
         if request.POST:
             FormRent = RentForm(request.POST, request.FILES, instance=Rent.objects.get(pk=rent_id))
             FormLocation = LocationForm(request.POST, request.FILES,instance=propiedad.location)
@@ -783,6 +784,13 @@ def Edit_rent(request, rent_id):
                         create_notification(request.user, "ER", rent_id, 'RT')
                         FormLocation.save()
                         FormDocTypeC.save()
+                        for val in request.FILES:
+                            print(val, request.POST[val])
+                            if request.FILES[val] != '':
+                                contestado += 1
+                                total += 1
+		 	    else:
+         			total += 1
                         if request.POST['plot'] == '':
                             print('vacio')
                             total -= 1

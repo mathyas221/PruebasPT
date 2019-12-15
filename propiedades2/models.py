@@ -299,14 +299,14 @@ class Rent(models.Model):
     # contables internos
     value_land = models.CharField(max_length=100, blank=True, null=True)
     value_construction = models.CharField(max_length=100, blank=True, null=True)
-    contract_type = models.OneToOneField(DocumentTypeC, blank=True, null=True, on_delete=models.PROTECT,
+    contract_type = models.OneToOneField(DocumentTypeC, blank=True, null=True, on_delete=models.CASCADE,
                                          related_name='TipoContratoArriendo')
     acquiring_name = models.CharField(max_length=100)
     supplier_name = models.CharField(max_length=100)
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.BooleanField(default=True)
-    stats_rent = models.ForeignKey(Stats,blank=True, null=True, on_delete=models.PROTECT)
+    stats_rent = models.ForeignKey(Stats,blank=True, null=True, on_delete=models.CASCADE)
     def __str__(self):
         return "Nombre: %s" % (self.name)
 
@@ -328,7 +328,7 @@ class Post(models.Model):
     author = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
     publish_date = models.DateTimeField(default=timezone.now)
     acquisition = models.ForeignKey(Acquisition, on_delete=models.CASCADE, related_name='PostAcquisition',blank=True,null=True)
-    rent = models.ForeignKey(Rent, on_delete=models.PROTECT, related_name='PostRent',blank=True,null=True)
+    rent = models.ForeignKey(Rent, on_delete=models.CASCADE, related_name='PostRent',blank=True,null=True)
 
     def getDiference(self):
         now = datetime.now(timezone.utc)
