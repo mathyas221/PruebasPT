@@ -23,7 +23,6 @@
 </button>
 <script>
   $(".notification_").on('click', function () {
-    alert($(this).data('pk'))
     $.ajax({
       url: '{% url "delete_notification" %}',
       type: 'POST',

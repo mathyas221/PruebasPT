@@ -142,6 +142,7 @@ $(document).ready(function(){
                   'csrfmiddlewaretoken': '{{ csrf_token}}'
               },
               success: function(data){
+                  console.log(data)
                   if (data.result == 'True'){
                       window.location.href = "{% url 'list_staff' %}"
                   }
