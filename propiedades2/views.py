@@ -789,8 +789,8 @@ def Edit_rent(request, rent_id):
                             if request.FILES[val] != '':
                                 contestado += 1
                                 total += 1
-		 	                else:
-         			            total += 1
+                            else:
+                                total += 1
                         if request.POST['plot'] == '':
                             print('vacio')
                             total -= 1
