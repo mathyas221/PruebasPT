@@ -765,8 +765,8 @@ def Edit_rent(request, rent_id):
     if data['staff'].type_user == 'DIG' or data['staff'].type_user == 'ADM':
         total = 0
         contestado = 0
-        #if propiedad.contract_type.archive != '':
-        #    contestado += 1
+        if propiedad.contract_type.archive != '':
+            contestado += 1
         #if propiedad.image != '':
         #    contestado +=1
         #    total += 1
@@ -785,7 +785,7 @@ def Edit_rent(request, rent_id):
                         FormLocation.save()
                         FormDocTypeC.save()
                         for val in request.FILES:
-                            print(val, request.POST[val])
+                            print(val, request.POST.get(val))
                             if request.FILES[val] != '':
                                 contestado += 1
                                 total += 1
