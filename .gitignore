@@ -1,0 +1,12 @@
+db.sqlite3
+manage.py
+.idea
+.git
+venv
+.env
+database.sql
+docker-compose.yml
+Dockerfile
+.vscode
+media
+__pycache__
