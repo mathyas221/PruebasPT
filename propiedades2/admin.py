@@ -61,93 +61,93 @@ admin.site.register(Property)
 admin.site.unregister(Property)
 admin.site.unregister(District)
 @admin.register(Property)
-class propertyAdmin(VersionAdmin):
+class PropertyAdmin(VersionAdmin):
     pass
 @admin.register(Location)
-class locationAdmin(VersionAdmin):
+class LocationAdmin(VersionAdmin):
     pass
 @admin.register(Acquisition)
-class acquisitionAdmin(VersionAdmin):
+class AcquisitionAdmin(VersionAdmin):
     pass
 @admin.register(ArchitectureRecordAcq)
-class architectureRecordAcqAdmin(VersionAdmin):
+class ArchitectureRecordAcqAdmin(VersionAdmin):
     pass
 @admin.register(InternalAccountantsAcq)
-class internalAccountantsAcqAdmin(VersionAdmin):
+class InternalAccountantsAcqAdmin(VersionAdmin):
     pass
 @admin.register(NotaryAcquisition)
-class notaryAcquisitionAdmin(VersionAdmin):
+class NotaryAcquisitionAdmin(VersionAdmin):
     pass
 @admin.register(SiiRecord)
-class siiRecordAdmin(VersionAdmin):
+class SiiRecordAdmin(VersionAdmin):
     pass
 @admin.register(DocumentEx)
-class documentExAdmin(VersionAdmin):
+class DocumentExAdmin(VersionAdmin):
     pass
 @admin.register(DocumentCip)
-class documentCipAdmin(VersionAdmin):
+class DocumentCipAdmin(VersionAdmin):
     pass
 @admin.register(DocumentCn)
-class documentCnAdmin(VersionAdmin):
+class DocumentCnAdmin(VersionAdmin):
     pass
 @admin.register(DocumentBlue)
-class documentBlueAdmin(VersionAdmin):
+class DocumentBlueAdmin(VersionAdmin):
     pass
 @admin.register(DocumentBuildP)
-class documentBuildPAdmin(VersionAdmin):
+class DocumentBuildPAdmin(VersionAdmin):
     pass
 @admin.register(DocumentMR)
-class documentMRAdmin(VersionAdmin):
+class DocumentMRAdmin(VersionAdmin):
     pass
 @admin.register(DocumentTypeC)
-class documentTypeCAdmin(VersionAdmin):
+class DocumentTypeCAdmin(VersionAdmin):
     pass
 @admin.register(DocumentOther)
-class documentOtherAdmin(VersionAdmin):
+class DocumentOtherAdmin(VersionAdmin):
     pass
 @admin.register(DocumentWR)
-class documentWRAdmin(VersionAdmin):
+class DocumentWRAdmin(VersionAdmin):
     pass
 @admin.register(DocumentDC)
-class documentDCAdmin(VersionAdmin):
+class DocumentDCAdmin(VersionAdmin):
     pass
 @admin.register(DocumentPH)
-class documentPHAdmin(VersionAdmin):
+class DocumentPHAdmin(VersionAdmin):
     pass
 @admin.register(DocumentDB)
-class documentDBAdmin(VersionAdmin):
+class DocumentDBAdmin(VersionAdmin):
     pass
 @admin.register(DocumentAc)
-class documentAcAdmin(VersionAdmin):
+class DocumentAcAdmin(VersionAdmin):
     pass
 @admin.register(DocumentEs)
-class documentEsAdmin(VersionAdmin):
+class DocumentEsAdmin(VersionAdmin):
     pass
 @admin.register(Post)
-class postAdmin(VersionAdmin):
+class PostAdmin(VersionAdmin):
     pass
 @admin.register(Rent)
-class rentAdmin(VersionAdmin):
+class RentAdmin(VersionAdmin):
     pass
 @admin.register(Staff)
-class staffAdmin(VersionAdmin):
+class StaffAdmin(VersionAdmin):
     pass
 @admin.register(Region)
-class regionAdmin(VersionAdmin):
+class RegionAdmin(VersionAdmin):
     pass
 @admin.register(Change_property)
-class change_propertyAdmin(VersionAdmin):
+class Change_propertyAdmin(VersionAdmin):
     pass
 @admin.register(Comment)
-class commentAdmin(VersionAdmin):
+class CommentAdmin(VersionAdmin):
     pass
 @admin.register(Stats)
-class statsAdmin(VersionAdmin):
+class StatsAdmin(VersionAdmin):
     pass
 @admin.register(District)
-class districtAdmin(VersionAdmin):
+class DistrictAdmin(VersionAdmin):
     pass
 
 @admin.register(Notification)
-class notificationAdmin(VersionAdmin):
+class NotificationAdmin(VersionAdmin):
     pass

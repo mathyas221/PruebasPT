@@ -36,11 +36,11 @@ from openpyxl.styles import Alignment,Border, Font, PatternFill, Side, Color, Na
 
 # Create your views here.
 
-def randomString(stringLength=4):
+def randomString(StringLength=4):
     """Generate a random string of fixed length """
     letters = string.ascii_lowercase
     global CODE
-    CODE = ''.join(random.choice(letters) for i in range(stringLength))
+    CODE = ''.join(random.choice(letters) for i in range(StringLength))
 @login_required(login_url='LOGIN')
 def index(request):
     data = {}
@@ -216,7 +216,6 @@ def Add_acquisition(request):
                     print(request.POST)
                     if request.POST.get('id_propiedad') is not None:
                         prop = Acquisition.objects.get(pk=request.POST.get('id_propiedad'))
-                        id = request.POST.get('id_propiedad')
                         if data['formArquitecture'].is_valid():
                             data['formArquitecture'] = data['formArquitecture'].save(commit=False)
                         if data['formEx'].is_valid():
@@ -1011,7 +1010,6 @@ def list_staff(request):
         object_list = Staff.objects.all().order_by('-id')
         paginator = Paginator(object_list, 10)
         page = request.GET.get('page')
-        users = User.objects.all()
         try:
             data['object_list'] = paginator.page(page)
         except PageNotAnInteger:
@@ -1413,7 +1411,6 @@ def password_valid(password):
             flag = 0
             print("Valid Password")
             return True
-            break
 
     if flag ==-1:
         print("Not a Valid Password")
@@ -1463,7 +1460,6 @@ def edit_post(request):
     data = {}
     post_id = request.POST.get('id')
     print(request.POST.get('description'))
-    post = Post.objects.get(pk = post_id)
     if request.method == 'POST':
         descrip = request.POST.get('description')
         Post.objects.filter(pk = post_id).update(description = descrip)
@@ -1475,7 +1471,6 @@ def edit_post(request):
 
 @login_required(login_url='LOGIN')
 def delete_post(request):
-    data = {}
     if request.POST.get('id') is not None:
         if request.method == 'POST':
             id = request.POST.get('id')
@@ -1529,7 +1524,6 @@ def add_comment(request):
 def edit_comment(request):
     data = {}
     comment_id = request.POST.get('id')
-    post = Comment.objects.get(pk=comment_id)
     if request.method == 'POST':
         descrip = request.POST.get('description')
         Comment.objects.filter(pk=comment_id).update(description = descrip)
@@ -1541,7 +1535,6 @@ def edit_comment(request):
 
 @login_required(login_url='LOGIN')
 def delete_comment(request):
-    data = {}
     if request.POST.get('id') is not None:
         if request.method == 'POST':
             id = request.POST.get('id')
@@ -1554,8 +1547,6 @@ def delete_comment(request):
 
 
 def create_stats(total, complete):
-    complete = complete
-    total = total
     percentage = (complete/total)*100
     x = Stats.objects.create(total = total, complete = complete, percentage = percentage)
     return x
@@ -1836,7 +1827,6 @@ def generate_report_excel(request):
             vc = 'Sin registro'
             des = 'Sin registro'
             owner = 'Sin registro'
-            dest = 'Sin registro'
             debt = 'Sin registro'
             af = 'Sin registro'
             ec = 'Sin registro'
